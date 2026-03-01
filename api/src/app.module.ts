@@ -9,6 +9,7 @@ import { OrderItem } from './entities/order-item.entity';
 import { MenuItem } from './entities/menuitem.entity';
 import { Category } from './entities/category.entity';
 import { Staff } from './entities/staff.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { Staff } from './entities/staff.entity';
         synchronize: true,
       }),
     }),
+    AuthModule,
   ],
   controllers: [],
   providers: [],

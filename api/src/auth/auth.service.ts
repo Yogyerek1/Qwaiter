@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
@@ -36,6 +40,25 @@ export class AuthService {
     });
 
     return { message: 'Login success' };
+  }
+
+  async register(email: string, username: string, password: string) {
+    const existing = await this.userRepository.findOne({ where: { email } });
+    if (existing) {
+      throw new ConflictException('This email is already registered!');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = this.userRepository.create({
+      email,
+      username,
+      password: hashedPassword,
+    });
+
+    await this.userRepository.save(user);
+
+    return { message: 'Registered successfully!' };
   }
 
   async logout(response: any) {
