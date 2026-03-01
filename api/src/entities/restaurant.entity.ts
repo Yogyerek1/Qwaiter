@@ -11,6 +11,7 @@ import { Table } from './table.entity';
 import { Order } from './order.entity';
 import { MenuItem } from './menuitem.entity';
 import { Category } from './category.entity';
+import { Staff } from './staff.entity';
 
 @Entity()
 export class Restaurant {
@@ -29,6 +30,9 @@ export class Restaurant {
   @ManyToOne(() => User, (user) => user.restaurants, { nullable: true })
   @JoinColumn({ name: 'ownerID' })
   owner: User;
+
+  @OneToMany(() => Staff, (staff) => staff.restaurant)
+  staffMembers: Staff[];
 
   @OneToMany(() => Table, (table) => table.restaurant)
   tables: Table[];
