@@ -1,6 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Restaurant } from './entities/restaurant.entity';
+import { Table } from './entities/table.entity';
+import { Order } from './entities/order.entity';
+import { OrderItem } from './entities/order-item.entity';
+import { MenuItem } from './entities/menuitem.entity';
+import { Category } from './entities/category.entity';
+import { Staff } from './entities/staff.entity';
 
 @Module({
   imports: [
@@ -17,7 +25,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         username: ConfigService.get<string>('DB_USER'),
         password: ConfigService.get<string>('DB_PASS'),
         database: ConfigService.get<string>('DB_NAME'),
-        autoLoadEntities: true,
+        entities: [
+          User,
+          Restaurant,
+          Table,
+          Order,
+          OrderItem,
+          MenuItem,
+          Category,
+          Staff,
+        ],
         synchronize: true,
       }),
     }),
