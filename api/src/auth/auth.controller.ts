@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -31,6 +32,19 @@ export class AuthController {
   @Post('logout')
   async logout(@Res({ passthrough: true }) response: Response) {
     return this.authService.logout(response);
+  }
+
+  @Post('update')
+  async update(
+    @Body() body: { email?: string; username?: string; password?: string },
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    return this.authService.update(
+      response,
+      body.email,
+      body.username,
+      body.password,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

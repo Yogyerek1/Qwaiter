@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +9,7 @@ import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { response } from 'express';
 @Injectable()
 export class AuthService {
   constructor(
@@ -59,6 +61,26 @@ export class AuthService {
     await this.userRepository.save(user);
 
     return { message: 'Registered successfully!' };
+  }
+
+  async update(
+    response: any,
+    email?: string,
+    username?: string,
+    password?: string,
+  ) {
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    if (email != null) user.email = email;
+    if (username != null) user.username = username;
+    if (password != null) user.password = await bcrypt.hash(password, 10);
+
+    await this.userRepository.save(user);
+    await this.logout(response);
+
+    return { message: 'Updated successfully' };
   }
 
   async logout(response: any) {
