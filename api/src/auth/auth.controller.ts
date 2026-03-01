@@ -29,6 +29,6 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('me')
   getMe(@Request() req: any) {
-    return req.user;
+    return req.user; // JwtStrategy validate()
   }
 }
