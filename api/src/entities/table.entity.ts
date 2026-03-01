@@ -3,9 +3,11 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  OneToMany,
   JoinColumn,
 } from 'typeorm';
 import { Restaurant } from './restaurant.entity';
+import { Order } from './order.entity';
 
 @Entity()
 export class Table {
@@ -19,7 +21,7 @@ export class Table {
   tableName: string;
 
   @Column({ unique: true })
-  qrCodeToken: string;
+  QRCodeToken: string;
 
   @Column({ length: 5 })
   authCode: string;
@@ -29,4 +31,7 @@ export class Table {
   })
   @JoinColumn({ name: 'restaurantID' })
   restaurant: Restaurant;
+
+  @OneToMany(() => Order, (order) => order.table)
+  orders: Order[];
 }
