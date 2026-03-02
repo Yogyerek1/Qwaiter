@@ -35,8 +35,8 @@ export class AuthService {
 
     response.cookie('access_token', token, {
       httpOnly: true, // JS can't access
-      secure: false, // true if using https
-      sameSite: 'lax', // CSRF DEFENSE
+      secure: true, // true if using https
+      sameSite: 'strict', // CSRF DEFENSE
       maxAge: 1000 * 60 * 60 * 24, // 1 DAY
     });
 
