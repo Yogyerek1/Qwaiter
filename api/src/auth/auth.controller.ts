@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
@@ -15,6 +16,9 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateDto } from './dto/update.dto';
+import { VerifyCodeDto } from './dto/verify/verify-code.dto';
+import { ForgotPasswordDto } from './dto/verify/forgot-password.dto';
+import { ResetPasswordDto } from './dto/verify/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -28,9 +32,22 @@ export class AuthController {
     return this.authService.login(body.email, body.password, response);
   }
 
+  @Post('verifyLogin')
+  async verifyLogin(
+    @Body() body: VerifyCodeDto,
+    @Res({ passthrough: true }) response: any,
+  ) {
+    return this.authService.verifyLogin(body.email, body.code, response);
+  }
+
   @Post('register')
   async register(@Body() body: RegisterDto) {
     return this.authService.register(body.email, body.username, body.password);
+  }
+
+  @Post('verifyRegister')
+  async registerVerify(@Body() body: VerifyCodeDto) {
+    return this.authService.verifyRegister(body.email, body.code);
   }
 
   @Post('logout')
@@ -40,15 +57,35 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('update')
-  async update(
-    @Body() body: UpdateDto,
-    @Res({ passthrough: true }) response: Response,
+  async update(@Request() req: any, @Body() body: UpdateDto) {
+    return this.authService.update(req.user.email, {
+      email: body.email,
+      username: body.username,
+      password: body.password,
+    });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('verifyUpdate')
+  async updateVerify(
+    @Request() req: any,
+    @Body() body: { code: string },
+    @Res({ passthrough: true }) response: any,
   ) {
-    return this.authService.update(
-      response,
+    return this.authService.verifyUpdate(req.user.email, body.code, response);
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() body: ForgotPasswordDto) {
+    return this.authService.forgotPassword(body.email);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() body: ResetPasswordDto) {
+    return this.authService.verifiyForgotPassword(
       body.email,
-      body.username,
-      body.password,
+      body.code,
+      body.newPassword,
     );
   }
 

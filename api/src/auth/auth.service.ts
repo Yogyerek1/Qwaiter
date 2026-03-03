@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/require-await */
@@ -77,12 +78,23 @@ export class AuthService {
     return action.data;
   }
 
-  async login(email: string, password: string, response: any) {
+  async login(email: string, password: string, response: Response) {
     const user = await this.userRepository.findOne({ where: { email } }); // find user by email
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Wrong email or password');
     }
+
+    return this.createVerification(email, 'login', { userID: user.userID });
+  }
+
+  async verifyLogin(email: string, code: string, response: any) {
+    const data = this.verifyAndGetData(email, 'login', code);
+
+    const user = await this.userRepository.findOne({
+      where: { userID: data.userId },
+    });
+    if (!user) throw new NotFoundException('User not found!');
 
     // Generate token
     const payload = {
@@ -90,7 +102,6 @@ export class AuthService {
       email: user.email,
       username: user.username,
     };
-
     const token = this.jwtService.sign(payload); // generate token
 
     response.cookie('access_token', token, {
@@ -111,35 +122,75 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = this.userRepository.create({
-      email,
+    return this.createVerification(email, 'register', {
       username,
       password: hashedPassword,
     });
+  }
+
+  async verifyRegister(email: string, code: string) {
+    const data = this.verifyAndGetData(email, 'register', code);
+
+    const user = this.userRepository.create({
+      email: email,
+      username: data.username,
+      password: data.password,
+    });
 
     await this.userRepository.save(user);
-
     return { message: 'Registered successfully!' };
   }
 
-  async update(
-    response: any,
-    email?: string,
-    username?: string,
-    password?: string,
-  ) {
-    const user = await this.userRepository.findOne({ where: { email } });
+  async update(currentEmail: string, updateData: any) {
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(updateData.password, 10);
+    }
+
+    return this.createVerification(currentEmail, 'update', updateData);
+  }
+
+  async verifyUpdate(currentEmail: string, code: string, response: any) {
+    const changes = this.verifyAndGetData(currentEmail, 'upate', code);
+
+    const user = await this.userRepository.findOne({
+      where: { email: currentEmail },
+    });
 
     if (!user) throw new NotFoundException('User not found');
 
-    if (email != null) user.email = email;
-    if (username != null) user.username = username;
-    if (password != null) user.password = await bcrypt.hash(password, 10);
+    if (changes.email != null) user.email = changes.email;
+    if (changes.username != null) user.username = changes.username;
+    if (changes.password != null) user.password = changes.password;
 
     await this.userRepository.save(user);
     await this.logout(response);
 
-    return { message: 'Updated successfully' };
+    return { message: 'Updated successfully! Please login again!' };
+  }
+
+  async forgotPassword(email: string) {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) return { message: 'If email exists, code sent.' };
+
+    return this.createVerification(email, 'forgot-password', {
+      userId: user.userID,
+    });
+  }
+
+  async verifiyForgotPassword(
+    email: string,
+    code: string,
+    newPassword: string,
+  ) {
+    this.verifyAndGetData(email, 'forgot-password', code);
+
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) throw new NotFoundException('User not found!');
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await this.userRepository.save(user);
+
+    return { message: 'Password reset successfully!' };
   }
 
   async logout(response: any) {
