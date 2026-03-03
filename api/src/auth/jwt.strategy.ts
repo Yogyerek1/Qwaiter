@@ -1,13 +1,9 @@
-/* eslint-disable @typescript-eslint/require-await */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
+// no longer need AuthService since we won't query the DB
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -30,8 +26,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
+    // token already contains email/username; no DB access required
+    if (!payload || !payload.email) {
+      throw new UnauthorizedException();
+    }
     return {
-      id: payload.sub,
       email: payload.email,
       username: payload.username,
     };

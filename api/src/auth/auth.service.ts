@@ -25,6 +25,7 @@ type PendingAction = {
 };
 @Injectable()
 export class AuthService {
+  [x: string]: any;
   private pendingActions = new Map<string, PendingAction>();
   constructor(
     @InjectRepository(User)
@@ -91,8 +92,9 @@ export class AuthService {
   async verifyLogin(email: string, code: string, response: any) {
     const data = this.verifyAndGetData(email, 'login', code);
 
+    // data was stored with userID (uppercase D); use the same key
     const user = await this.userRepository.findOne({
-      where: { userID: data.userId },
+      where: { userID: data.userID },
     });
     if (!user) throw new NotFoundException('User not found!');
 
@@ -150,7 +152,7 @@ export class AuthService {
   }
 
   async verifyUpdate(currentEmail: string, code: string, response: any) {
-    const changes = this.verifyAndGetData(currentEmail, 'upate', code);
+    const changes = this.verifyAndGetData(currentEmail, 'update', code);
 
     const user = await this.userRepository.findOne({
       where: { email: currentEmail },
@@ -196,5 +198,9 @@ export class AuthService {
   async logout(response: any) {
     response.clearCookie('access_token');
     return { message: 'Successfull logout' };
+  }
+
+  async findByEmail(email: string) {
+    return this.userRepository.findOne({ where: { email } });
   }
 }
