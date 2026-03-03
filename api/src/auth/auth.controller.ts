@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
+
 import {
   Body,
   Controller,
@@ -54,6 +55,9 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   getMe(@Request() req: any) {
-    return req.user; // JwtStrategy validate()
+    return {
+      email: req.user.email,
+      username: req.user.username,
+    }; // JwtStrategy validate()
   }
 }

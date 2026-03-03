@@ -10,6 +10,7 @@ import { MenuItem } from './entities/menuitem.entity';
 import { Category } from './entities/category.entity';
 import { Staff } from './entities/staff.entity';
 import { AuthModule } from './auth/auth.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { AuthModule } from './auth/auth.module';
       }),
     }),
     AuthModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],
