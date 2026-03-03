@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/require-await */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -13,13 +15,67 @@ import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { MailService } from '../../mail/mail.service';
+
+type PendingAction = {
+  code: string;
+  expiresAt: Date;
+  data: any;
+};
 @Injectable()
 export class AuthService {
+  private pendingActions = new Map<string, PendingAction>();
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private jwtService: JwtService, // to generate token
-  ) {}
+    private mailService: MailService,
+  ) {
+    setInterval(
+      () => {
+        const now = new Date();
+        this.pendingActions.forEach((value, key) => {
+          if (value.expiresAt < now) this.pendingActions.delete(key);
+        });
+      },
+      5 * 60 * 1000,
+    );
+  }
+
+  private generateCode(): string {
+    const code = Math.floor(100000 + Math.random() * 900000);
+    return code.toString();
+  }
+
+  private async createVerification(email: string, type: string, data?: any) {
+    const code = this.generateCode();
+
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+
+    const key = `${email}:${type}`;
+    this.pendingActions.set(key, { code, expiresAt, data });
+
+    await this.mailService.sendVerificationCodeMail(email, code);
+    return { message: 'Verification code sent to your email.' };
+  }
+
+  private verifyAndGetData(email: string, type: string, code: string) {
+    const key = `${email}:${type}`;
+    const action = this.pendingActions.get(key);
+
+    if (!action)
+      throw new BadRequestException('Code expired or invalid request.');
+    if (action.code !== code)
+      throw new BadRequestException('Invalid verification code.');
+    if (action.expiresAt < new Date()) {
+      this.pendingActions.delete(key);
+      throw new BadRequestException('Verification code expired.');
+    }
+
+    this.pendingActions.delete(key);
+    return action.data;
+  }
 
   async login(email: string, password: string, response: any) {
     const user = await this.userRepository.findOne({ where: { email } }); // find user by email
