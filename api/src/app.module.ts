@@ -25,7 +25,7 @@ import { MailModule } from '../mail/mail.module';
         host: ConfigService.get<string>('DB_HOST'),
         port: parseInt(ConfigService.get<string>('DB_PORT') ?? '5432', 10),
         username: ConfigService.get<string>('DB_USER'),
-        password: String(ConfigService.get('DB_PASS')), // ← ez volt a gond
+        password: ConfigService.getOrThrow<string>('DB_PASS'), // ← ez volt a gond
         database: ConfigService.get<string>('DB_NAME'),
         entities: [
           User,
