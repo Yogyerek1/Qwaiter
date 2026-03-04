@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   Body,
   Controller,
@@ -9,6 +7,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { Request as ExpressRequest } from 'express';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LoginDto } from './dto/login.dto';
@@ -18,6 +17,13 @@ import { VerifyCodeDto } from './dto/verify/verify-code.dto';
 import { ForgotPasswordDto } from './dto/verify/forgot-password.dto';
 import { ResetPasswordDto } from './dto/verify/reset-password.dto';
 import { verifyUpdateDto } from './dto/verify/verify-update.dto';
+
+interface AuthenticatedRequest extends ExpressRequest {
+  user: {
+    email: string;
+    username: string;
+  };
+}
 
 @Controller('auth')
 export class AuthController {
@@ -56,7 +62,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('update')
-  async update(@Request() req: any, @Body() body: UpdateDto) {
+  async update(@Request() req: AuthenticatedRequest, @Body() body: UpdateDto) {
     return this.authService.update(req.user.email, {
       email: body.email,
       username: body.username,
@@ -67,7 +73,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('verify-update')
   async updateVerify(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Body() body: verifyUpdateDto,
     @Res({ passthrough: true }) response: any,
   ) {
@@ -90,7 +96,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  getMe(@Request() req: any) {
+  getMe(@Request() req: AuthenticatedRequest) {
     return {
       email: req.user.email,
       username: req.user.username,

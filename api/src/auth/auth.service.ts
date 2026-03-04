@@ -17,6 +17,7 @@ import { User } from '../entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { MailService } from '../../mail/mail.service';
+import { UpdateDto } from './dto/update.dto';
 
 type PendingAction = {
   code: string;
@@ -145,7 +146,7 @@ export class AuthService {
     return { message: 'Registered successfully!' };
   }
 
-  async update(currentEmail: string, updateData: any) {
+  async update(currentEmail: string, updateData: UpdateDto) {
     if (updateData.password) {
       updateData.password = await bcrypt.hash(updateData.password, 10);
     }
