@@ -9,6 +9,8 @@ import { OrderItem } from './entities/order-item.entity';
 import { MenuItem } from './entities/menuitem.entity';
 import { Category } from './entities/category.entity';
 import { Staff } from './entities/staff.entity';
+import { AuthModule } from './auth/auth.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
@@ -21,9 +23,9 @@ import { Staff } from './entities/staff.entity';
       useFactory: (ConfigService: ConfigService) => ({
         type: 'postgres',
         host: ConfigService.get<string>('DB_HOST'),
-        port: ConfigService.get<number>('DB_PORT'),
+        port: parseInt(ConfigService.get<string>('DB_PORT') ?? '5432', 10),
         username: ConfigService.get<string>('DB_USER'),
-        password: ConfigService.get<string>('DB_PASS'),
+        password: ConfigService.getOrThrow<string>('DB_PASS'), // ← ez volt a gond
         database: ConfigService.get<string>('DB_NAME'),
         entities: [
           User,
@@ -38,6 +40,8 @@ import { Staff } from './entities/staff.entity';
         synchronize: true,
       }),
     }),
+    AuthModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],
