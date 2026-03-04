@@ -195,7 +195,7 @@ export class AuthService {
 
   async logout(response: any) {
     response.clearCookie('access_token');
-    return { message: 'Successfull logout' };
+    return { message: 'Successful logout' };
   }
 
   async findByEmail(email: string) {
