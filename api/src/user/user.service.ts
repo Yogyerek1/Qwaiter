@@ -148,4 +148,18 @@ export class UserService {
 
     return { message: 'Table was successfully deleted!' };
   }
+
+  async getTablesByRestaurant(ownerID: string, restaurantID: string) {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID, ownerID },
+      relations: ['tables'],
+    });
+
+    if (!restaurant)
+      throw new NotFoundException(
+        "Restaurant not found or you don't own this restaurant!",
+      );
+
+    return restaurant.tables;
+  }
 }

@@ -83,4 +83,13 @@ export class UserController {
       body.tableID,
     );
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('tables')
+  getTableByRestaurant(
+    @Req() req: AuthRequest,
+    @Param('restaurantID') restaurantID: string,
+  ) {
+    return this.userService.getTablesByRestaurant(req.user.id, restaurantID);
+  }
 }
