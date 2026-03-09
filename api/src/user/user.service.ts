@@ -18,5 +18,17 @@ export class UserService {
     ownerID: string,
     restaurantName: string,
     address: string,
-  ) {}
+  ) {
+    const restaurant = this.restaurantRepository.create({
+      ownerID,
+      restaurantName,
+      address,
+    });
+
+    await this.restaurantRepository.save(restaurant);
+    return {
+      message: 'Restaurant was created successfully!',
+      restaurant: restaurant,
+    };
+  }
 }
