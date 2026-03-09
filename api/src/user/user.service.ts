@@ -1,5 +1,4 @@
 import {
-  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -9,6 +8,7 @@ import { Restaurant } from '../entities/restaurant.entity';
 import { User } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateRestaurantDto } from './dto/updateRestaurant.dto';
+import { Table } from '../entities/table.entity';
 
 @Injectable()
 export class UserService {
@@ -18,6 +18,9 @@ export class UserService {
 
     @InjectRepository(User)
     private userRepository: Repository<User>,
+
+    @InjectRepository(Table)
+    private tableRepository: Repository<Table>,
   ) {}
 
   async createRestaurant(
@@ -89,6 +92,36 @@ export class UserService {
     return {
       message: 'Restaurant was successfully updated',
       restaurant,
+    };
+  }
+
+  async createTable(
+    ownerID: string,
+    restaurantID: string,
+    tableName: string,
+    authCode: string,
+  ) {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID },
+    });
+
+    if (!restaurant) throw new NotFoundException('Restaurant not found!');
+    if (restaurant.ownerID !== ownerID)
+      throw new ForbiddenException(
+        "You can't create a table for someone else's restaurant!",
+      );
+
+    const table = this.tableRepository.create({
+      restaurantID: restaurant.restaurantID,
+      tableName,
+      authCode,
+    });
+
+    await this.tableRepository.save(table);
+
+    return {
+      message: 'Table was created successfully!',
+      table,
     };
   }
 }

@@ -21,9 +21,10 @@ export class Table {
   tableName: string;
 
   @Column({ unique: true })
+  @PrimaryGeneratedColumn('uuid')
   QRCodeToken: string;
 
-  @Column({ length: 5 })
+  @Column()
   authCode: string;
 
   @ManyToOne(() => Restaurant, (restaurant) => restaurant.tables, {

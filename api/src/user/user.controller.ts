@@ -2,17 +2,25 @@ import {
   Controller,
   Post,
   UseGuards,
-  Request,
+  Req,
   Body,
   Delete,
   Get,
   Param,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateRestaurantDto } from './dto/createRestaurant.dto';
 import { DeleteRestaurantDto } from './dto/deleteRestaurant.dto';
 import { UpdateRestaurantDto } from './dto/updateRestaurant.dto';
+import { createTableDto } from './dto/createTable.dto';
+
+interface AuthRequest extends Request {
+  user: {
+    id: string;
+  };
+}
 
 @Controller('user')
 export class UserController {
@@ -20,7 +28,7 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Post('create/restaurant')
-  createRestaurant(@Request() req: any, @Body() body: CreateRestaurantDto) {
+  createRestaurant(@Req() req: AuthRequest, @Body() body: CreateRestaurantDto) {
     const ownerID = req.user.id;
     return this.userService.createRestaurant(
       ownerID,
@@ -31,24 +39,36 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('delete/restaurant')
-  deleteRestaurant(@Request() req: any, @Body() body: DeleteRestaurantDto) {
+  deleteRestaurant(@Req() req: AuthRequest, @Body() body: DeleteRestaurantDto) {
     const ownerID = req.user.id;
     return this.userService.deleteRestaurant(ownerID, body.restaurantID);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('restaurants')
-  getRestaurantByOwner(@Request() req: any) {
+  getRestaurantByOwner(@Req() req: AuthRequest) {
     return this.userService.getRestaurantsByOwner(req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('update/restaurant/:id')
   updateRestaurant(
-    @Request() req: any,
+    @Req() req: AuthRequest,
     @Param('id') restaurantID: string,
     @Body() body: UpdateRestaurantDto,
   ) {
     return this.userService.updateRestaurant(req.user.id, restaurantID, body);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('create/table')
+  createTable(@Req() req: AuthRequest, @Body() body: createTableDto) {
+    const ownerID = req.user.id;
+    return this.userService.createTable(
+      ownerID,
+      body.restaurantID,
+      body.tableName,
+      body.authCode,
+    );
   }
 }
