@@ -66,6 +66,17 @@ export class UserService {
     return restaurant;
   }
 
+  async getRestaurantsByOwner(ownerID: string) {
+    const restaurants = await this.restaurantRepository.find({
+      where: { ownerID: ownerID },
+    });
+
+    if (!restaurants)
+      throw new NotFoundException("You don't have restaurants!");
+
+    return restaurants;
+  }
+
   async updateRestaurant(
     ownerID: string,
     restaurantID: string,

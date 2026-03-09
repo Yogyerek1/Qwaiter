@@ -43,6 +43,12 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('restaurants')
+  getRestaurantByOwner(@Request() req: any) {
+    return this.userService.getRestaurantsByOwner(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('update/restaurant/:id')
   updateRestaurant(
     @Request() req: any,
