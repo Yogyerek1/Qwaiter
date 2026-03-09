@@ -56,16 +56,6 @@ export class UserService {
     return { message: 'Restaurant was successfully deleted!' };
   }
 
-  async getRestaurantByID(ownerID: string, restaurantID: string) {
-    const restaurant = await this.restaurantRepository.findOne({
-      where: { restaurantID },
-    });
-
-    if (!restaurant) throw new NotFoundException('Restaurant not found!');
-
-    return restaurant;
-  }
-
   async getRestaurantsByOwner(ownerID: string) {
     const restaurants = await this.restaurantRepository.find({
       where: { ownerID: ownerID },
