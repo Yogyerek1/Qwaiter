@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Restaurant } from '../entities/restaurant.entity';
 import { User } from '../entities/user.entity';
@@ -30,5 +35,21 @@ export class UserService {
       message: 'Restaurant was created successfully!',
       restaurant: restaurant,
     };
+  }
+
+  async deleteRestaurant(ownerID: string, restaurantID: string) {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID },
+    });
+
+    if (!restaurant) throw new NotFoundException('Restaurant not found!');
+
+    if (ownerID !== restaurant.ownerID)
+      throw new ForbiddenException(
+        "You can't delete someone else's restaurant!",
+      );
+
+    await this.restaurantRepository.delete(restaurant);
+    return { message: 'Restaurant was successfully deleted!' };
   }
 }
