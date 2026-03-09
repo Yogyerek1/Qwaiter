@@ -12,6 +12,7 @@ import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateRestaurantDto } from './dto/createRestaurant.dto';
 import { DeleteRestaurantDto } from './dto/deleteRestaurant.dto';
+import { UpdateRestaurantDto } from './dto/updateRestaurant.dto';
 
 @Controller('user')
 export class UserController {
@@ -39,5 +40,15 @@ export class UserController {
   @Get('restaurant/:id')
   getRestaurant(@Request() req: any, @Param('id') restaurantID: string) {
     return this.userService.getRestaurantByID(req.user.id, restaurantID);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('update/restaurant/:id')
+  updateRestaurant(
+    @Request() req: any,
+    @Param('id') restaurantID: string,
+    @Body() body: UpdateRestaurantDto,
+  ) {
+    return this.userService.updateRestaurant(req.user.id, restaurantID, body);
   }
 }
