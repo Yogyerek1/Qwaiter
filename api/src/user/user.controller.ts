@@ -8,19 +8,23 @@ import {
   Get,
   Param,
 } from '@nestjs/common';
-import { Request } from 'express';
+import { Request } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateRestaurantDto } from './dto/createRestaurant.dto';
 import { DeleteRestaurantDto } from './dto/deleteRestaurant.dto';
 import { UpdateRestaurantDto } from './dto/updateRestaurant.dto';
 import { createTableDto } from './dto/createTable.dto';
+import { deleteTableDto } from './dto/deleteTable.dto';
+import { updateTableDto } from './dto/updateTable.dto';
 
 interface AuthRequest extends Request {
   user: {
     id: string;
   };
 }
+import { CreateWorkerDto } from './dto/createWorker.dto';
+import { UpdateWorkerDto } from './dto/updateWorker.dto';
 
 @Controller('user')
 export class UserController {
@@ -70,5 +74,50 @@ export class UserController {
       body.tableName,
       body.authCode,
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('delete/table')
+  deleteTable(@Req() req: AuthRequest, @Body() body: deleteTableDto) {
+    const ownerID = req.user.id;
+    return this.userService.deleteTable(
+      ownerID,
+      body.restaurantID,
+      body.tableID,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('update/table')
+  updateTable(@Req() req: AuthRequest, @Body() body: updateTableDto) {
+    const ownerID = req.user.id;
+    return this.userService.updateTable(ownerID, body);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('tables/:restaurantID')
+  getTableByRestaurant(
+    @Req() req: AuthRequest,
+    @Param('restaurantID') restaurantID: string,
+  ) {
+    return this.userService.getTablesByRestaurant(req.user.id, restaurantID);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('create/worker')
+  createWorker(@Request() req: any, @Body() body: CreateWorkerDto) {
+    return this.userService.createWorker(req.user.id, body);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('staff/:restaurantID')
+  getWorkers(@Request() req: any, @Param('restaurantID') restaurantID: string) {
+    return this.userService.getStaffMembers(req.user.id, restaurantID);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('update/staff')
+  updateWorker(@Request() req: any, @Body() body: UpdateWorkerDto) {
+    return this.userService.updateWorker(req.user.id, body);
   }
 }

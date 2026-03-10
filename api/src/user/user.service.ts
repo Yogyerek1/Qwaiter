@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -9,6 +10,11 @@ import { User } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateRestaurantDto } from './dto/updateRestaurant.dto';
 import { Table } from '../entities/table.entity';
+import { updateTableDto } from './dto/updateTable.dto';
+import { CreateWorkerDto } from './dto/createWorker.dto';
+import { Staff } from '../entities/staff.entity';
+import * as bcrypt from 'bcrypt';
+import { UpdateWorkerDto } from './dto/updateWorker.dto';
 
 @Injectable()
 export class UserService {
@@ -21,6 +27,9 @@ export class UserService {
 
     @InjectRepository(Table)
     private tableRepository: Repository<Table>,
+
+    @InjectRepository(Staff)
+    private staffRepository: Repository<Staff>,
   ) {}
 
   async createRestaurant(
@@ -122,6 +131,174 @@ export class UserService {
     return {
       message: 'Table was created successfully!',
       table,
+    };
+  }
+
+  async deleteTable(ownerID: string, restaurantID: string, tableID: string) {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID },
+    });
+
+    if (!restaurant) throw new NotFoundException('Restaurant not found!');
+
+    if (ownerID !== restaurant.ownerID)
+      throw new ForbiddenException(
+        "You can't delete someone else's restaurant's table!",
+      );
+
+    const table = await this.tableRepository.findOne({
+      where: { tableID, restaurantID: restaurant.restaurantID },
+    });
+
+    if (!table)
+      throw new NotFoundException('Table not found in this restaurant!');
+
+    await this.tableRepository.delete({ tableID: table.tableID });
+
+    return { message: 'Table was successfully deleted!' };
+  }
+
+  async getTablesByRestaurant(ownerID: string, restaurantID: string) {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID, ownerID },
+      relations: ['tables'],
+    });
+
+    if (!restaurant)
+      throw new NotFoundException(
+        "Restaurant not found or you don't own this restaurant!",
+      );
+
+    return restaurant.tables;
+  }
+
+  async updateTable(ownerID: string, dto: updateTableDto) {
+    const restaurantID = dto.restaurantID;
+    const tableID = dto.tableID;
+
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID },
+    });
+
+    if (!restaurant) throw new NotFoundException('Restaurant not found!');
+
+    if (ownerID !== restaurant.ownerID)
+      throw new ForbiddenException(
+        "You can't update a table of someone else's restaurant!",
+      );
+
+    const table = await this.tableRepository.findOne({
+      where: { tableID, restaurantID: restaurant.restaurantID },
+    });
+
+    if (!table)
+      throw new NotFoundException('Table not found in this restaurant!');
+
+    if (dto.tableName !== undefined) table.tableName = dto.tableName;
+    if (dto.authCode !== undefined) table.authCode = dto.authCode;
+
+    await this.tableRepository.save(table);
+
+    return {
+      message: 'Table was successfully updated!',
+      table,
+    };
+  }
+  async createWorker(ownerID: string, dto: CreateWorkerDto) {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID: dto.restaurantID },
+      relations: ['staffMembers'],
+    });
+
+    if (!restaurant) throw new NotFoundException('Restaurant not found!');
+    if (ownerID !== restaurant.ownerID)
+      throw new ForbiddenException(
+        "You can't create worker to someone else's restaurant!",
+      );
+
+    const existingWorker = restaurant.staffMembers.find(
+      (staff) => staff.username == dto.username,
+    );
+
+    if (existingWorker)
+      throw new ConflictException('Username already taken in this restaurant!');
+
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+
+    const staff = this.staffRepository.create({
+      name: dto.name,
+      username: dto.username,
+      password: hashedPassword,
+      role: dto.role,
+      restaurant: restaurant,
+    });
+
+    await this.staffRepository.save(staff);
+    return {
+      message: 'Worker created successfully',
+      worker: {
+        name: staff.name,
+        username: staff.username,
+        role: staff.role,
+      },
+    };
+  }
+
+  async getStaffMembers(ownerID: string, restaurantID: string) {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID: restaurantID },
+      relations: ['staffMembers'],
+    });
+
+    if (!restaurant) throw new NotFoundException('Restaurant not found!');
+    if (ownerID !== restaurant.ownerID)
+      throw new ForbiddenException(
+        "You can't get someone else's restaurant staff members!",
+      );
+
+    return restaurant.staffMembers;
+  }
+
+  async updateWorker(ownerID: string, dto: UpdateWorkerDto) {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID: dto.restaurantID },
+      relations: ['staffMembers'],
+    });
+
+    if (!restaurant) throw new NotFoundException('Restaurant not found!');
+    if (ownerID !== restaurant.ownerID)
+      throw new ForbiddenException(
+        "You can't update someone else's restaurant staff member!",
+      );
+
+    const worker = await this.staffRepository.findOne({
+      where: { id: dto.workerID },
+    });
+    if (!worker) throw new NotFoundException('Worker not found!');
+
+    const workerInRestaurant = restaurant.staffMembers.find(
+      (staff) => staff.id == dto.workerID,
+    );
+
+    if (!workerInRestaurant)
+      throw new ForbiddenException(
+        'This worker does not belong to this restaurant!',
+      );
+
+    if (dto.name) worker.name = dto.name;
+    if (dto.username) worker.username = dto.username;
+    if (dto.password) worker.password = await bcrypt.hash(dto.password, 10);
+    if (dto.role) worker.role = dto.role;
+
+    await this.staffRepository.save(worker);
+
+    return {
+      message: 'Worker updated successfully!',
+      worker: {
+        name: worker.name,
+        username: worker.username,
+        role: worker.role,
+      },
     };
   }
 }
