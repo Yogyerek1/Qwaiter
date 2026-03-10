@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString } from 'class-validator';
+import { IsEnum, IsString, IsUUID } from 'class-validator';
 import { StaffRole } from '../../entities/staff.entity';
 
 export class CreateWorkerDto {
   @ApiProperty({ example: '' })
-  @IsString()
+  @IsUUID()
   restaurantID: string;
 
   @ApiProperty({ example: '' })
