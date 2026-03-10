@@ -242,4 +242,19 @@ export class UserService {
       },
     };
   }
+
+  async getStaffMembers(ownerID: string, restaurantID: string) {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID: restaurantID },
+      relations: ['staffMembers'],
+    });
+
+    if (!restaurant) throw new NotFoundException('Restaurant not found!');
+    if (ownerID !== restaurant.ownerID)
+      throw new ForbiddenException(
+        "You can't get someone else's restaurant staff members!",
+      );
+
+    return restaurant.staffMembers;
+  }
 }

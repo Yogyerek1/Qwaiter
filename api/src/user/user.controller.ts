@@ -107,4 +107,10 @@ export class UserController {
   createWorker(@Request() req: any, @Body() body: CreateWorkerDto) {
     return this.userService.createWorker(req.user.id, body);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('staff/:restaurantID')
+  getWorkers(@Request() req: any, @Param('restaurantID') restaurantID: string) {
+    return this.userService.getStaffMembers(req.user.id, restaurantID);
+  }
 }
