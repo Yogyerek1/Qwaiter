@@ -8,7 +8,7 @@ import {
   Get,
   Param,
 } from '@nestjs/common';
-import { Request } from 'express';
+import { Request } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateRestaurantDto } from './dto/createRestaurant.dto';
@@ -23,6 +23,7 @@ interface AuthRequest extends Request {
     id: string;
   };
 }
+import { CreateWorkerDto } from './dto/createWorker.dto';
 
 @Controller('user')
 export class UserController {
@@ -99,5 +100,11 @@ export class UserController {
     @Param('restaurantID') restaurantID: string,
   ) {
     return this.userService.getTablesByRestaurant(req.user.id, restaurantID);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('create/worker')
+  createWorker(@Request() req: any, @Body() body: CreateWorkerDto) {
+    return this.userService.createWorker(req.user.id, body);
   }
 }

@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -10,6 +11,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateRestaurantDto } from './dto/updateRestaurant.dto';
 import { Table } from '../entities/table.entity';
 import { updateTableDto } from './dto/updateTable.dto';
+import { CreateWorkerDto } from './dto/createWorker.dto';
+import { Staff } from '../entities/staff.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -22,6 +26,9 @@ export class UserService {
 
     @InjectRepository(Table)
     private tableRepository: Repository<Table>,
+
+    @InjectRepository(Staff)
+    private staffRepository: Repository<Staff>,
   ) {}
 
   async createRestaurant(
@@ -194,6 +201,45 @@ export class UserService {
     return {
       message: 'Table was successfully updated!',
       table,
+    };
+  }
+  async createWorker(ownerID: string, dto: CreateWorkerDto) {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID: dto.restaurantID },
+      relations: ['staffMembers'],
+    });
+
+    if (!restaurant) throw new NotFoundException('Restaurant not found!');
+    if (ownerID !== restaurant.ownerID)
+      throw new ForbiddenException(
+        "You can't create worker to someone else's restaurant!",
+      );
+
+    const existingWorker = restaurant.staffMembers.find(
+      (staff) => staff.username == dto.username,
+    );
+
+    if (existingWorker)
+      throw new ConflictException('Username already taken in this restaurant!');
+
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+
+    const staff = this.staffRepository.create({
+      name: dto.name,
+      username: dto.username,
+      password: hashedPassword,
+      role: dto.role,
+      restaurant: restaurant,
+    });
+
+    await this.staffRepository.save(staff);
+    return {
+      message: 'Worker created successfully',
+      worker: {
+        name: staff.name,
+        username: staff.username,
+        role: staff.role,
+      },
     };
   }
 }
