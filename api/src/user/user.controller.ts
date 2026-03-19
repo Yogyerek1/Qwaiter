@@ -8,6 +8,7 @@ import {
   Get,
   Param,
   Patch,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { Request } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -160,5 +161,13 @@ export class UserController {
   @Delete('delete/menuItem')
   deleteMenuItem(@Request() req: any, @Body() body: DeleteMenuItemDto) {
     return this.userService.deleteMenuItem(req.user.id, body);
+  }
+
+  @Get(':restaurantId/menuItem/:menuItemId')
+  getMenuItem(
+    @Param('restaurantId', ParseUUIDPipe) restaurantID: string,
+    @Param('menuItemId', ParseUUIDPipe) menuItemId: string,
+  ) {
+    return this.userService.getMenuItemById(restaurantID, menuItemId);
   }
 }

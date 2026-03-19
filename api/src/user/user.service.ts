@@ -23,7 +23,6 @@ import { UpdateCategoryDto } from './dto/updateCategory.dto';
 import { CreateMenuItemDto } from './dto/createMenuItem.dto';
 import { MenuItem } from '../entities/menuitem.entity';
 import { DeleteMenuItemDto } from './dto/deleteMenuItem.dto';
-import { GetMenuItemDto } from './dto/getMenuItem.dto';
 
 @Injectable()
 export class UserService {
@@ -465,22 +464,22 @@ export class UserService {
     return { message: 'Menu item deleted successfully!' };
   }
 
-  async getMenuItemById(dto: GetMenuItemDto) {
+  async getMenuItemById(restaurantID: string, menuItemID: string) {
     const restaurant = await this.restaurantRepository.findOne({
-      where: { restaurantID: dto.restaurantID },
+      where: { restaurantID: restaurantID },
       relations: ['categories', 'categories.items'],
     });
 
     if (!restaurant) throw new NotFoundException('Restaurant not found!');
 
     // Search through all categories to find the menu item beloging to this restaurant
-    for (const category of restaurant.categories) {
-      const menuItem = category.items.find(
-        (item) => item.id === dto.menuItemID,
-      );
-      if (menuItem) return menuItem;
-    }
+    const menuItem = await this.menuItemRepository.findOne({
+      where: { id: menuItemID, restaurantID: restaurantID },
+    });
 
-    throw new NotFoundException('Menu item not found in this restaurant!');
+    if (!menuItem)
+      throw new NotFoundException('Menu item not found in this restauratn!');
+
+    return menuItem;
   }
 }
