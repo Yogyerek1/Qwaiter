@@ -6,9 +6,12 @@ import { Table } from '../entities/table.entity';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { Staff } from '../entities/staff.entity';
+import { Category } from '../entities/category.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Restaurant, Staff, Table])],
+  imports: [
+    TypeOrmModule.forFeature([User, Restaurant, Staff, Table, Category]),
+  ],
   controllers: [UserController],
   providers: [UserService],
 })

@@ -15,6 +15,8 @@ import { CreateWorkerDto } from './dto/createWorker.dto';
 import { Staff } from '../entities/staff.entity';
 import * as bcrypt from 'bcrypt';
 import { UpdateWorkerDto } from './dto/updateWorker.dto';
+import { CreateCategoryDto } from './dto/createCategory.dto';
+import { Category } from '../entities/category.entity';
 
 @Injectable()
 export class UserService {
@@ -30,6 +32,9 @@ export class UserService {
 
     @InjectRepository(Staff)
     private staffRepository: Repository<Staff>,
+
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>,
   ) {}
 
   async createRestaurant(
@@ -300,5 +305,34 @@ export class UserService {
         role: worker.role,
       },
     };
+  }
+
+  async createCategory(ownerID: string, dto: CreateCategoryDto) {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID: dto.restaurantID },
+    });
+
+    if (!restaurant) throw new NotFoundException('Restaurant not found!');
+
+    if (restaurant.ownerID != ownerID)
+      throw new ForbiddenException(
+        "You can't add category to someon else's restaurant!",
+      );
+
+    const category = await this.categoryRepository.findOne({
+      where: { name: dto.categoryName, restaurantID: dto.restaurantID },
+    });
+
+    if (category) throw new ConflictException('Category already exists!');
+
+    const newCategory = this.categoryRepository.create({
+      restaurantID: dto.restaurantID,
+      name: dto.categoryName,
+      displayOrder: dto.displayOrder,
+    });
+
+    const savedCategory = await this.categoryRepository.save(newCategory);
+
+    return savedCategory;
   }
 }
