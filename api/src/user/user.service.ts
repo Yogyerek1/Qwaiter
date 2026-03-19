@@ -482,4 +482,14 @@ export class UserService {
 
     return menuItem;
   }
+
+  async getMenu(restaurantID: string) {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID },
+      relations: ['categories', 'categories.items'],
+    });
+
+    if (!restaurant) throw new NotFoundException('Restaurant not found!');
+    return restaurant.categories;
+  }
 }

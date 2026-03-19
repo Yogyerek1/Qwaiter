@@ -170,4 +170,9 @@ export class UserController {
   ) {
     return this.userService.getMenuItemById(restaurantID, menuItemId);
   }
+
+  @Get(':restaurantId/menu')
+  getMenu(@Param('restaurantId', ParseUUIDPipe) restaurantID: string) {
+    return this.userService.getMenu(restaurantID);
+  }
 }
