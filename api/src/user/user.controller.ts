@@ -29,6 +29,7 @@ import { UpdateWorkerDto } from './dto/updateWorker.dto';
 import { CreateCategoryDto } from './dto/createCategory.dto';
 import { DeleteCategoryDto } from './dto/deleteCategory.dto';
 import { UpdateCategoryDto } from './dto/updateCategory.dto';
+import { CreateMenuItemDto } from './dto/createMenuItem.dto';
 
 @Controller('user')
 export class UserController {
@@ -146,5 +147,11 @@ export class UserController {
   @Patch('update/categories')
   updateCategory(@Request() req: any, @Body() body: UpdateCategoryDto) {
     return this.userService.updateCategory(req.user.id, body);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('create/menuItem')
+  createMenuItem(@Request() req: any, @Body() body: CreateMenuItemDto) {
+    return this.userService.createMenuItem(req.user.id, body);
   }
 }
