@@ -26,6 +26,7 @@ interface AuthRequest extends Request {
 import { CreateWorkerDto } from './dto/createWorker.dto';
 import { UpdateWorkerDto } from './dto/updateWorker.dto';
 import { CreateCategoryDto } from './dto/createCategory.dto';
+import { DeleteCategoryDto } from './dto/deleteCategory.dto';
 
 @Controller('user')
 export class UserController {
@@ -132,5 +133,11 @@ export class UserController {
   @Get('categories/:restaurantID')
   getCategories(@Param('restaurantID') restaurantID: string) {
     return this.userService.getCategories(restaurantID);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('delete/category')
+  deleteCategory(@Request() req: any, @Body() body: DeleteCategoryDto) {
+    return this.userService.deleteCategory(req.user.id, body);
   }
 }
