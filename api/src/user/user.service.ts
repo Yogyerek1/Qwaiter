@@ -22,6 +22,7 @@ import { DeleteCategoryDto } from './dto/deleteCategory.dto';
 import { UpdateCategoryDto } from './dto/updateCategory.dto';
 import { CreateMenuItemDto } from './dto/createMenuItem.dto';
 import { MenuItem } from '../entities/menuitem.entity';
+import { DeleteMenuItemDto } from './dto/deleteMenuItem.dto';
 
 @Injectable()
 export class UserService {
@@ -438,5 +439,28 @@ export class UserService {
     const savedMenuItem = await this.menuItemRepository.save(newMenuItem);
 
     return savedMenuItem;
+  }
+
+  async deleteMenuItem(ownerID: string, dto: DeleteMenuItemDto) {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID: dto.restaurantID },
+    });
+
+    if (!restaurant) throw new NotFoundException('Restaurant not found!');
+    if (restaurant.ownerID !== ownerID)
+      throw new ForbiddenException(
+        "You can't delete menu item for someone else's restaurant!",
+      );
+
+    const menuItem = await this.menuItemRepository.findOne({
+      where: { id: dto.menuItemID, restaurantID: dto.restaurantID },
+    });
+
+    if (!menuItem)
+      throw new NotFoundException('Menu item not found in this restaurant!');
+
+    await this.menuItemRepository.delete({ id: dto.menuItemID });
+
+    return { message: 'Menu item deleted successfully!' };
   }
 }
