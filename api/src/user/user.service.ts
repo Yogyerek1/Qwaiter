@@ -23,6 +23,7 @@ import { UpdateCategoryDto } from './dto/updateCategory.dto';
 import { CreateMenuItemDto } from './dto/createMenuItem.dto';
 import { MenuItem } from '../entities/menuitem.entity';
 import { DeleteMenuItemDto } from './dto/deleteMenuItem.dto';
+import { UpdateMenuItemDto } from './dto/updateMenuItem.dto';
 
 @Injectable()
 export class UserService {
@@ -491,5 +492,42 @@ export class UserService {
 
     if (!restaurant) throw new NotFoundException('Restaurant not found!');
     return restaurant.categories;
+  }
+
+  async updateMenuItem(ownerID: string, dto: UpdateMenuItemDto) {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID: dto.restaurantID },
+    });
+
+    if (!restaurant) throw new NotFoundException('Restaurant not found!');
+
+    if (ownerID !== restaurant.ownerID)
+      throw new ForbiddenException(
+        "You can't update menuItem for someone else's restaurant!",
+      );
+
+    const menuItem = await this.menuItemRepository.findOne({
+      where: { id: dto.menuItemID, restaurantID: restaurant.restaurantID },
+    });
+
+    if (!menuItem)
+      throw new NotFoundException('Menu item not found in this restaurant!');
+
+    if (dto.categoryID) {
+      const category = await this.categoryRepository.findOne({
+        where: { id: dto.categoryID, restaurantID: dto.restaurantID },
+      });
+      if (!category)
+        throw new NotFoundException('Category not found in this restaurant!');
+      if (dto.categoryID) menuItem.categoryID = dto.categoryID;
+    }
+
+    if (dto.name) menuItem.name = dto.name;
+    if (dto.description) menuItem.description = dto.description;
+    if (dto.price !== undefined) menuItem.price = dto.price;
+
+    const savedMenuItem = await this.menuItemRepository.save(menuItem);
+
+    return savedMenuItem;
   }
 }
