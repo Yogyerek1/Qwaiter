@@ -20,6 +20,8 @@ import { Category } from '../entities/category.entity';
 import { DeleteRestaurantDto } from './dto/deleteRestaurant.dto';
 import { DeleteCategoryDto } from './dto/deleteCategory.dto';
 import { UpdateCategoryDto } from './dto/updateCategory.dto';
+import { CreateMenuItemDto } from './dto/createMenuItem.dto';
+import { MenuItem } from '../entities/menuitem.entity';
 
 @Injectable()
 export class UserService {
@@ -38,6 +40,9 @@ export class UserService {
 
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
+
+    @InjectRepository(MenuItem)
+    private menuItemRepository: Repository<MenuItem>,
   ) {}
 
   async createRestaurant(
@@ -399,5 +404,39 @@ export class UserService {
     const savedCategory = await this.categoryRepository.save(category);
 
     return savedCategory;
+  }
+
+  async createMenuItem(ownerID: string, dto: CreateMenuItemDto) {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID: dto.restaurantID },
+      relations: ['categories'],
+    });
+
+    if (!restaurant) throw new NotFoundException('Restaurant not found!');
+
+    if (restaurant.ownerID !== ownerID)
+      throw new ForbiddenException(
+        "You can't create menu item for someone else's restaurant!",
+      );
+
+    if (dto.categoryID) {
+      const category = restaurant.categories.find(
+        (cat) => cat.id === dto.categoryID,
+      );
+
+      if (!category) throw new NotFoundException('Category not found!');
+    }
+
+    const newMenuItem = this.menuItemRepository.create({
+      restaurantID: dto.restaurantID,
+      categoryID: dto.categoryID,
+      name: dto.name,
+      description: dto.description,
+      price: dto.price,
+    });
+
+    const savedMenuItem = await this.menuItemRepository.save(newMenuItem);
+
+    return savedMenuItem;
   }
 }
