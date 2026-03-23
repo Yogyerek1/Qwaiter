@@ -24,6 +24,8 @@ import { CreateMenuItemDto } from './dto/createMenuItem.dto';
 import { MenuItem } from '../entities/menuitem.entity';
 import { DeleteMenuItemDto } from './dto/deleteMenuItem.dto';
 import { UpdateMenuItemDto } from './dto/updateMenuItem.dto';
+import { randomUUID } from 'crypto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
@@ -139,13 +141,17 @@ export class UserService {
       restaurantID: restaurant.restaurantID,
       tableName,
       authCode,
+      QRCodeToken: randomUUID(),
     });
 
     await this.tableRepository.save(table);
 
+    const appUrl = process.env.APP_URL;
+
     return {
       message: 'Table was created successfully!',
       table,
+      qrUrl: `${appUrl}/guest/table/${table.QRCodeToken}`,
     };
   }
 
