@@ -6,7 +6,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Table } from '../entities/table.entity';
 import { CreateOrderDto } from './dto/order-item.dto';
 import { MenuItem } from '../entities/menuitem.entity';
@@ -82,7 +82,9 @@ export class GuestService {
 
     // GET all menu item by IDs
     const menuItemIds = dto.items.map((item) => item.menuItemID);
-    const menuItems = await this.menuItemRepository.findByIds(menuItemIds);
+    const menuItems = await this.menuItemRepository.find({
+      where: { id: In(menuItemIds) },
+    });
 
     if (menuItems.length !== menuItemIds.length)
       throw new BadRequestException('One or more menu item not found!');
@@ -119,7 +121,7 @@ export class GuestService {
     return {
       message: 'Order successfully placed!',
       orderID: savedOrder.id,
-      totalAmount: total,
+      totalAmount: Number(total.toFixed(2)),
     };
   }
 
