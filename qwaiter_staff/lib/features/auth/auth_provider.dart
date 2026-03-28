@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'auth_service.dart';
+import '../../core/auth_service.dart';
 
 enum AuthStatus { idle, loading, error }
 
@@ -9,6 +9,7 @@ class AuthProvider extends ChangeNotifier {
   AuthStatus status = AuthStatus.idle;
   String? errorMessage;
   String? pendingEmail;
+  bool isLoggedIn = false;
 
   // [] means optional
   void _setState(AuthStatus s, [String? error]) {
@@ -17,10 +18,21 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> checkAuth() async {
+    try {
+      await _authService.getMe();
+      isLoggedIn = true;
+    } catch (_) {
+      isLoggedIn = false;
+    }
+    notifyListeners();
+  }
+
   Future<bool> workerLogin(String username, String password) async {
     _setState(AuthStatus.loading);
     try {
       await _authService.workerLogin(username, password);
+      isLoggedIn = true;
       _setState(AuthStatus.idle);
       return true;
     } catch (e) {
@@ -47,6 +59,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       await _authService.verifyLogin(pendingEmail!, code);
       pendingEmail = null;
+      isLoggedIn = true;
       _setState(AuthStatus.idle);
       return true;
     } catch (e) {
@@ -57,5 +70,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> logout() async {
     await _authService.logout();
+    isLoggedIn = false;
+    notifyListeners();
   }
 }
