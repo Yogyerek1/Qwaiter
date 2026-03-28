@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import '../../features/auth/auth_provider.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/verify_screen.dart';
+import '../../features/home/screens/home_screen.dart';
+import '../../features/restaurant/screens/restaurant_shell.dart';
 
 class AppRouter {
   static GoRouter router(AuthProvider auth) => GoRouter(
@@ -27,6 +28,11 @@ class AppRouter {
         path: '/home',
         builder: (context, state) =>
             const Scaffold(body: Center(child: Text('Home - hamarosan'))),
+      ),
+      GoRoute(
+        path: '/restaurant/:id',
+        builder: (context, state) =>
+            RestaurantShell(restaurantId: state.pathParameters['id']!),
       ),
     ],
   );
