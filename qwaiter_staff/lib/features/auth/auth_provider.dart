@@ -36,6 +36,7 @@ class AuthProvider extends ChangeNotifier {
   String? errorMessage;
   String? pendingEmail;
   bool isLoggedIn = false;
+  AuthUser? currentUser;
 
   // [] means optional
   void _setState(AuthStatus s, [String? error]) {
@@ -46,10 +47,12 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> checkAuth() async {
     try {
-      await _authService.getMe();
+      final data = await _authService.getMe();
+      currentUser = AuthUser.fromJson(data);
       isLoggedIn = true;
     } catch (_) {
       isLoggedIn = false;
+      currentUser = null;
     }
     notifyListeners();
   }
@@ -58,7 +61,7 @@ class AuthProvider extends ChangeNotifier {
     _setState(AuthStatus.loading);
     try {
       await _authService.workerLogin(username, password);
-      isLoggedIn = true;
+      await checkAuth();
       _setState(AuthStatus.idle);
       return true;
     } catch (e) {
@@ -85,7 +88,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       await _authService.verifyLogin(pendingEmail!, code);
       pendingEmail = null;
-      isLoggedIn = true;
+      await checkAuth();
       _setState(AuthStatus.idle);
       return true;
     } catch (e) {
@@ -97,6 +100,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void> logout() async {
     await _authService.logout();
     isLoggedIn = false;
+    currentUser = null;
     notifyListeners();
   }
 }
