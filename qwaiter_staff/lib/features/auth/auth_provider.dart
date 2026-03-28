@@ -3,6 +3,32 @@ import '../../core/auth_service.dart';
 
 enum AuthStatus { idle, loading, error }
 
+class AuthUser {
+  final String id;
+  final String? email;
+  final String username;
+  final String role;
+  final String? restaurantID;
+
+  const AuthUser({
+    required this.id,
+    this.email,
+    required this.username,
+    required this.role,
+    this.restaurantID,
+  });
+
+  bool get isOwner => role == 'owner';
+
+  factory AuthUser.fromJson(Map<String, dynamic> json) => AuthUser(
+    id: json['id'],
+    username: json['username'],
+    role: json['role'],
+    email: json['email'],
+    restaurantID: json['restaurantID'],
+  );
+}
+
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
 
