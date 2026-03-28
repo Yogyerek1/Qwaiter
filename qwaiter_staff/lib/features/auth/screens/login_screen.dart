@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../auth_provider.dart';
 
@@ -38,12 +39,12 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_isOwnerMode) {
       success = await auth.ownerLogin(username, password);
       if (success && mounted) {
-        Navigator.pushNamed(context, '/verify'); // navigate to verify screen
+        context.go('/verify'); // navigate to verify screen
       }
     } else {
       success = await auth.workerLogin(username, password);
       if (success && mounted) {
-        Navigator.pushNamed(context, '/home'); // navigate to home screen
+        context.go('/home'); // navigate to home screen
       }
     }
 

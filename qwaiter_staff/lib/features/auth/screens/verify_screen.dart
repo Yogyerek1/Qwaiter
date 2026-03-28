@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../auth_provider.dart';
 
@@ -32,7 +33,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
     final success = await auth.verifyLogin(code);
 
     if (success && mounted) {
-      Navigator.pushNamed(context, '/home'); // navigate to home screen
+      context.go('/home'); // navigate to home screen
     }
 
     if (!success && mounted) {

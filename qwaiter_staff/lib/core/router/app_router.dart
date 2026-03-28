@@ -24,11 +24,7 @@ class AppRouter {
         path: '/verify',
         builder: (context, state) => const VerifyScreen(),
       ),
-      GoRoute(
-        path: '/home',
-        builder: (context, state) =>
-            const Scaffold(body: Center(child: Text('Home - hamarosan'))),
-      ),
+      GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
       GoRoute(
         path: '/restaurant/:id',
         builder: (context, state) =>

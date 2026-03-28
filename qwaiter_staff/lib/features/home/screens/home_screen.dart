@@ -47,7 +47,7 @@ class _WorkerHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.read<AuthProvider>().currentUser!;
+    final user = context.watch<AuthProvider>().currentUser!;
 
     return Scaffold(
       appBar: AppBar(
