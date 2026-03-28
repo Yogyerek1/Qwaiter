@@ -56,7 +56,49 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    final isLoading =
+        context.watch<AuthProvider>().status == AuthStatus.loading;
+
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Qwaiter Staff',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 32),
+            TextField(
+              controller: _usernameController,
+              decoration: InputDecoration(
+                labelText: _isOwnerMode ? 'Email' : 'Username',
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _passwordController,
+              decoration: const InputDecoration(labelText: 'Password'),
+              obscureText: true,
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: isLoading ? null : _submit,
+                child: isLoading
+                    ? CircularProgressIndicator()
+                    : const Text('Login'),
+              ),
+            ),
+            TextButton(
+              onPressed: () => setState(() => _isOwnerMode = !_isOwnerMode),
+              child: Text(_isOwnerMode ? 'Login as worker' : 'Login as owner'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
