@@ -12,6 +12,7 @@ import { Staff } from './entities/staff.entity';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { UserModule } from './user/user.module';
+import { GuestModule } from './guest/guest.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     MailModule,
     UserModule,
+    GuestModule,
   ],
   controllers: [],
   providers: [],

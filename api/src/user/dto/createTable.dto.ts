@@ -14,6 +14,6 @@ export class createTableDto {
 
   @ApiProperty({ example: '' })
   @IsString()
-  @MinLength(5)
+  @MinLength(2)
   authCode: string;
 }

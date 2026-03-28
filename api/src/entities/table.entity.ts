@@ -21,7 +21,6 @@ export class Table {
   tableName: string;
 
   @Column({ unique: true })
-  @PrimaryGeneratedColumn('uuid')
   QRCodeToken: string;
 
   @Column()
