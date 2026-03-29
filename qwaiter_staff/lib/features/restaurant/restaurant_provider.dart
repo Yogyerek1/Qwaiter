@@ -27,4 +27,10 @@ class RestaurantProvider extends ChangeNotifier {
   RestaurantStatus status = RestaurantStatus.idle;
   String? errorMessage;
   List<Restaurant> restaurant = [];
+
+  void _setState(RestaurantStatus s, [String? error]) {
+    status = s;
+    errorMessage = error;
+    notifyListeners();
+  }
 }
