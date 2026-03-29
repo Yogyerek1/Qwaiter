@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Singleton Dio HTTP client with automatic cookie management.
 /// Handles storing and sending the access_token cookie on every request.
@@ -16,7 +17,7 @@ class DioClient {
 
     dio = Dio(
       BaseOptions(
-        baseUrl: 'http://10.0.2.2:3000',
+        baseUrl: dotenv.env['API_URL'] ?? 'http://10.0.2.2:3000',
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
         contentType: 'application/json',
