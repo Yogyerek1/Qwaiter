@@ -23,4 +23,21 @@ class RestaurantService {
       throw e.response?.data['message'] ?? 'Failed to create restaurant';
     }
   }
+
+  Future<void> updateRestaurant(
+    String id,
+    String? restaurantName,
+    String? address,
+  ) async {
+    final data = <String, dynamic>{};
+    if (restaurantName != null)
+      data['restaurantName'] = restaurantName; // it's optional
+    if (address != null) data['address'] = address; // it's optional
+
+    try {
+      await _dio.post('/user/update/restaurant/$id', data: data);
+    } on DioException catch (e) {
+      throw e.response?.data['message'] ?? 'Failed to update restaurant';
+    }
+  }
 }
