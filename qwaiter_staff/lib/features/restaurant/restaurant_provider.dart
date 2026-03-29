@@ -68,4 +68,17 @@ class RestaurantProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> deleteRestaurant(String id) async {
+    _setState(RestaurantStatus.loading);
+    try {
+      await _service.deleteRestaurant(id);
+      restaurants.removeWhere((r) => r.id == id);
+      _setState(RestaurantStatus.idle);
+      return true;
+    } catch (e) {
+      _setState(RestaurantStatus.error, e.toString());
+      return false;
+    }
+  }
 }
