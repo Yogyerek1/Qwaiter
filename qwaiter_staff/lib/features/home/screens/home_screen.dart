@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:qwaiter_staff/features/restaurant/restaurant_provider.dart';
 import '../../auth/auth_provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -16,8 +17,23 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class _OwnerHome extends StatelessWidget {
+class _OwnerHome extends StatefulWidget {
   const _OwnerHome();
+
+  @override
+  State<_OwnerHome> createState() => _OwnerHomeState();
+}
+
+class _OwnerHomeState extends State<_OwnerHome> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(
+      () => context
+          .read<RestaurantProvider>()
+          .fetchRestaurants(), // when screen loaded fetch restaurant
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
