@@ -40,4 +40,12 @@ class RestaurantService {
       throw e.response?.data['message'] ?? 'Failed to update restaurant';
     }
   }
+
+  Future<void> deleteRestaurant(String id) async {
+    try {
+      await _dio.delete('/user/delete/restaurant', data: {'restaurantID': id});
+    } on DioException catch (e) {
+      throw e.response?.data['message'] ?? 'Failed to delete restaurant';
+    }
+  }
 }
