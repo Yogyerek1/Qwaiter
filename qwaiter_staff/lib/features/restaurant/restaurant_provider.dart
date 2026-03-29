@@ -44,4 +44,16 @@ class RestaurantProvider extends ChangeNotifier {
       _setState(RestaurantStatus.error, e.toString());
     }
   }
+
+  Future<bool> createRestaurant(String name, String address) async {
+    _setState(RestaurantStatus.loading);
+    try {
+      await _service.createRestaurant(name, address);
+      await fetchRestaurants();
+      return true;
+    } catch (e) {
+      _setState(RestaurantStatus.error, e.toString());
+      return false;
+    }
+  }
 }
