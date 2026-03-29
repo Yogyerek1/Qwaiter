@@ -20,3 +20,11 @@ class Restaurant {
     address: json['address'],
   );
 }
+
+class RestaurantProvider extends ChangeNotifier {
+  final RestaurantService _service = RestaurantService();
+
+  RestaurantStatus status = RestaurantStatus.idle;
+  String? errorMessage;
+  List<Restaurant> restaurant = [];
+}
