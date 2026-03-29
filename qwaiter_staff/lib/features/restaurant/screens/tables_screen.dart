@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class TablesScreen extends StatelessWidget {
-  const TablesScreen({Key? key}) : super(key: key);
+  final String restaurantId;
+  const TablesScreen({super.key, required this.restaurantId});
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return const Center(child: Text('Tables - hamarosan'));
   }
 }

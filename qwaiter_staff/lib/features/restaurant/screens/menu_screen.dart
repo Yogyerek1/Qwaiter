@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class MenuScreen extends StatelessWidget {
-  const MenuScreen({Key? key}) : super(key: key);
+  final String restaurantId;
+  const MenuScreen({super.key, required this.restaurantId});
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return const Center(child: Text('Menu - hamarosan'));
   }
 }

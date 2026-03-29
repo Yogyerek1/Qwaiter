@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 
-class WorkersScreen extends StatefulWidget {
-  const WorkersScreen({Key? key}) : super(key: key);
+class WorkersScreen extends StatelessWidget {
+  final String restaurantId;
+  const WorkersScreen({super.key, required this.restaurantId});
 
-  @override
-  _WorkersScreenState createState() => _WorkersScreenState();
-}
-
-class _WorkersScreenState extends State<WorkersScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return const Center(child: Text('Workers - hamarosan'));
   }
 }
