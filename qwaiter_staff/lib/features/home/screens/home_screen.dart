@@ -109,23 +109,21 @@ class _OwnerHomeState extends State<_OwnerHome> {
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
                       child: ListTile(
-                        title: ListTile(
-                          title: Text(r.name),
-                          subtitle: Text(r.address),
-                          onTap: () => context.go('/restaurant/${r.id}'),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                onPressed: () => _showEditSheet(r),
-                                icon: const Icon(Icons.edit),
-                              ),
-                              IconButton(
-                                onPressed: () => _deleteRestaurant(r.id),
-                                icon: const Icon(Icons.delete),
-                              ),
-                            ],
-                          ),
+                        title: Text(r.name),
+                        subtitle: Text(r.address),
+                        onTap: () => context.go('/restaurant/${r.id}'),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              onPressed: () => _showEditSheet(r),
+                              icon: const Icon(Icons.edit),
+                            ),
+                            IconButton(
+                              onPressed: () => _deleteRestaurant(r.id),
+                              icon: const Icon(Icons.delete),
+                            ),
+                          ],
                         ),
                       ),
                     );
