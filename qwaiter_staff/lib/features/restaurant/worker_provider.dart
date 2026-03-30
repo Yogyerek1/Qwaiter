@@ -31,4 +31,10 @@ class WorkerProvider extends ChangeNotifier {
   WorkerStatus status = WorkerStatus.idle;
   String? errorMessage;
   List<Worker> workers = [];
+
+  void _setState(WorkerStatus s, [String? error]) {
+    status = s;
+    errorMessage = error;
+    notifyListeners();
+  }
 }
