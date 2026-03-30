@@ -51,4 +51,26 @@ class WorkerProvider extends ChangeNotifier {
       _setState(WorkerStatus.error, e.toString());
     }
   }
+
+  Future<void> createWorker(
+    String name,
+    String username,
+    String password,
+    WorkerRole role,
+  ) async {
+    _setState(WorkerStatus.loading);
+    try {
+      final data = await _service.createWorker(
+        restaurantID,
+        name,
+        username,
+        password,
+        role,
+      );
+      await fetchWorkers();
+      _setState(WorkerStatus.idle);
+    } catch (e) {
+      _setState(WorkerStatus.error, e.toString());
+    }
+  }
 }
