@@ -6,6 +6,7 @@ import 'package:qwaiter_staff/core/router/app_router.dart';
 import 'package:qwaiter_staff/features/auth/auth_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:qwaiter_staff/features/restaurant/restaurant_provider.dart';
+import 'package:qwaiter_staff/features/restaurant/worker_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()..checkAuth()),
         ChangeNotifierProvider(create: (_) => RestaurantProvider()),
+        ChangeNotifierProvider(create: (_) => WorkerProvider()),
       ],
       child: _AppWithRouter(),
     );

@@ -29,7 +29,7 @@ class WorkerService {
           'name': name,
           'username': username,
           'password': password,
-          'role': role,
+          'role': role.name,
         },
       );
     } on DioException catch (e) {
@@ -54,7 +54,7 @@ class WorkerService {
       if (name != null) data['name'] = name;
       if (username != null) data['username'] = username;
       if (password != null) data['password'] = password;
-      if (role != null) data['role'] = role.toString();
+      if (role != null) data['role'] = role.name;
 
       final response = await _dio.post('/user/update/staff', data: data);
     } on DioException catch (e) {
