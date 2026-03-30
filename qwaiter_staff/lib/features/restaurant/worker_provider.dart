@@ -1,4 +1,8 @@
+import 'package:flutter/material.dart';
+import 'package:qwaiter_staff/features/restaurant/worker_service.dart';
 import 'package:qwaiter_staff/shared/enums/worker_role.dart';
+
+enum WorkerStatus { idle, loading, error }
 
 class Worker {
   final String id;
@@ -19,4 +23,12 @@ class Worker {
     username: json['username'],
     role: json['role'],
   );
+}
+
+class WorkerProvider extends ChangeNotifier {
+  final WorkerService _service = WorkerService();
+
+  WorkerStatus status = WorkerStatus.idle;
+  String? errorMessage;
+  List<Worker> workers = [];
 }

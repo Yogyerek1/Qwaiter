@@ -1,8 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:qwaiter_staff/core/network/dio_client.dart';
 
-class WorkerService extends ChangeNotifier {
+class WorkerService {
   final Dio _dio = DioClient().dio;
 
   Future<List<dynamic>> getWorkers(String restaurantID) async {
