@@ -97,4 +97,14 @@ class WorkerProvider extends ChangeNotifier {
       _setState(WorkerStatus.error, e.toString());
     }
   }
+
+  Future<void> deleteWorker(String workerID) async {
+    _setState(WorkerStatus.loading);
+    try {
+      _service.deleteWorker(restaurantID, workerID);
+      _setState(WorkerStatus.idle);
+    } catch (e) {
+      _setState(WorkerStatus.error, e.toString());
+    }
+  }
 }
