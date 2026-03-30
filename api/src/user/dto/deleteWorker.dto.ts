@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsUUID } from 'class-validator';
 
-export class deleteWorkerDto {
+export class DeleteWorkerDto {
   @ApiProperty({ example: '' })
   @IsUUID()
   restaurantID: string;

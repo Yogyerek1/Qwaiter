@@ -26,7 +26,7 @@ import { DeleteMenuItemDto } from './dto/deleteMenuItem.dto';
 import { UpdateMenuItemDto } from './dto/updateMenuItem.dto';
 import { randomUUID } from 'crypto';
 import { ConfigService } from '@nestjs/config';
-
+import { DeleteWorkerDto } from './dto/deleteWorker.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -535,5 +535,27 @@ export class UserService {
     const savedMenuItem = await this.menuItemRepository.save(menuItem);
 
     return savedMenuItem;
+  }
+
+  async deleteWorker(ownerID: string, dto: DeleteWorkerDto) {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { restaurantID: dto.restaurantID },
+    });
+
+    if (!restaurant) throw new NotFoundException('Restaurant not found');
+    if (restaurant.ownerID != ownerID)
+      throw new ForbiddenException(
+        `You can't delete other restaurant's worker`,
+      );
+
+    const worker = await this.staffRepository.findOne({
+      where: { id: dto.workerID },
+    });
+
+    if (!worker) throw new NotFoundException('Worker not found');
+
+    await this.staffRepository.delete({ id: worker.id });
+
+    return { message: 'Worker deleted successfully!' };
   }
 }
