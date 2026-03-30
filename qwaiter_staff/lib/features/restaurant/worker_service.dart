@@ -36,4 +36,29 @@ class WorkerService {
       throw e.response?.data['message'] ?? 'Failed to fetch workers';
     }
   }
+
+  Future<void> updateWorker(
+    String restaurantID,
+    String workerID,
+    String? name,
+    String? username,
+    String? password,
+    WorkerRole? role,
+  ) async {
+    try {
+      final Map<String, dynamic> data = {
+        'restaurantID': restaurantID,
+        'workerID': workerID,
+      };
+
+      if (name != null) data['name'] = name;
+      if (username != null) data['username'] = username;
+      if (password != null) data['password'] = password;
+      if (role != null) data['role'] = role.toString();
+
+      final response = await _dio.post('/user/update/staff', data: data);
+    } on DioException catch (e) {
+      throw e.response?.data['message'] ?? 'Failed to update worker';
+    }
+  }
 }
