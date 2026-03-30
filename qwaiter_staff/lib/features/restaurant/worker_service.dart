@@ -61,4 +61,15 @@ class WorkerService {
       throw e.response?.data['message'] ?? 'Failed to update worker';
     }
   }
+
+  Future<void> deleteWorker(String restaurantID, String workerID) async {
+    try {
+      await _dio.delete(
+        '/user/delete/worker',
+        data: {'restaurantID': restaurantID, 'workerID': workerID},
+      );
+    } on DioException catch (e) {
+      throw e.response?.data['message'] ?? 'Failed to delete worker';
+    }
+  }
 }
