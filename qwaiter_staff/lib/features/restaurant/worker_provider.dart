@@ -27,6 +27,9 @@ class Worker {
 
 class WorkerProvider extends ChangeNotifier {
   final WorkerService _service = WorkerService();
+  final String restaurantID;
+
+  WorkerProvider({required this.restaurantID});
 
   WorkerStatus status = WorkerStatus.idle;
   String? errorMessage;
@@ -36,5 +39,16 @@ class WorkerProvider extends ChangeNotifier {
     status = s;
     errorMessage = error;
     notifyListeners();
+  }
+
+  Future<void> fetchWorkers() async {
+    _setState(WorkerStatus.loading);
+    try {
+      final data = await _service.getWorkers(restaurantID);
+      workers = data.map((e) => Worker.fromJson(e)).toList();
+      _setState(WorkerStatus.idle);
+    } catch (e) {
+      _setState(WorkerStatus.error, e.toString());
+    }
   }
 }
