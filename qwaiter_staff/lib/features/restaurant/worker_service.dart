@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:qwaiter_staff/core/network/dio_client.dart';
+import 'package:qwaiter_staff/shared/enums/worker_role.dart';
 
 class WorkerService {
   final Dio _dio = DioClient().dio;
@@ -8,6 +9,29 @@ class WorkerService {
     try {
       final response = await _dio.get('/user/staff/$restaurantID');
       return response.data as List<dynamic>;
+    } on DioException catch (e) {
+      throw e.response?.data['message'] ?? 'Failed to fetch workers';
+    }
+  }
+
+  Future<void> createWorker(
+    String restaurantID,
+    String name,
+    String username,
+    String password,
+    WorkerRole role,
+  ) async {
+    try {
+      final response = await _dio.post(
+        '/user/create/worker',
+        data: {
+          'restaurantID': restaurantID,
+          'name': name,
+          'username': username,
+          'password': password,
+          'role': role,
+        },
+      );
     } on DioException catch (e) {
       throw e.response?.data['message'] ?? 'Failed to fetch workers';
     }
