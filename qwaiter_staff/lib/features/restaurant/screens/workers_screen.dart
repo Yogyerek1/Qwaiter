@@ -76,3 +76,32 @@ class _WorkersScreenState extends State<WorkersScreen> {
     };
   }
 }
+
+class _WorkerFormSheet extends StatefulWidget {
+  final Worker? worker;
+  const _WorkerFormSheet({this.worker});
+
+  @override
+  State<_WorkerFormSheet> createState() => _WorkerFormSheetState();
+}
+
+class _WorkerFormSheetState extends State<_WorkerFormSheet> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _usernameController;
+  late final TextEditingController _passwordController;
+  late final TextEditingController _roleController;
+
+  @override
+  void initState() {
+    _nameController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _roleController.dispose();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
