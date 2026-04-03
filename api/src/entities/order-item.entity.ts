@@ -25,7 +25,10 @@ export class OrderItem {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   unitPrice: number;
 
-  @ManyToOne(() => Order, (order) => order.items, { nullable: true })
+  @ManyToOne(() => Order, (order) => order.items, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'orderID' })
   order: Order;
 
