@@ -43,4 +43,25 @@ class TableService {
       throw e.response?.data['message'] ?? 'Failed to delete table';
     }
   }
+
+  Future<void> updateTable(
+    String restaurantID,
+    String tableID,
+    String? tableName,
+    String? authCode,
+  ) async {
+    try {
+      final Map<String, dynamic> data = {
+        'restaurantID': restaurantID,
+        'workerID': tableID,
+      };
+
+      if (tableName != null) data['tableName'] = tableName;
+      if (authCode != null) data['authCode'] = authCode;
+
+      await _dio.post('/user/update/table', data: data);
+    } on DioException catch (e) {
+      throw e.response?.data['message'] ?? 'Failed to update table';
+    }
+  }
 }
