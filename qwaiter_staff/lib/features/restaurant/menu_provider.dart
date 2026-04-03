@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qwaiter_staff/features/restaurant/menu_service.dart';
 
 enum MenuStatus { idle, loading, error }
 
@@ -42,4 +43,28 @@ class MenuItem {
     description: json['description'],
     price: json['price'],
   );
+}
+
+class MenuProvider extends ChangeNotifier {
+  final MenuService _service = MenuService();
+  String? _restaurantID;
+  String get restaurantID => _restaurantID ?? '';
+
+  MenuStatus status = MenuStatus.idle;
+  String? errorMessage;
+  List<Category> categories = [];
+  List<MenuItem> menuItems = [];
+
+  void setRestaurantID(String id) {
+    _restaurantID = id;
+    notifyListeners();
+  }
+
+  bool get isInitialized => _restaurantID != null && _restaurantID!.isNotEmpty;
+
+  void _setState(MenuStatus s, [String? error]) {
+    status = s;
+    errorMessage = error;
+    notifyListeners();
+  }
 }
