@@ -118,4 +118,29 @@ class MenuService {
       throw e.response?.data['message'] ?? 'Failed to delete menu item';
     }
   }
+
+  Future<void> updateMenuItem(
+    String restaurantID,
+    String menuItemID,
+    String categoryID,
+    String? name,
+    String? description,
+    int? price,
+  ) async {
+    try {
+      final Map<String, dynamic> data = {
+        'restaurantID': restaurantID,
+        'menuItemID': menuItemID,
+        'categoryID': categoryID,
+      };
+
+      if (name != null) data['name'] = name;
+      if (description != null) data['description'] = description;
+      if (price != null) data['price'] = price;
+
+      await _dio.patch('/user/update/menuItem', data: data);
+    } on DioException catch (e) {
+      throw e.response?.data['message'] ?? 'Failed to update menu item';
+    }
+  }
 }
