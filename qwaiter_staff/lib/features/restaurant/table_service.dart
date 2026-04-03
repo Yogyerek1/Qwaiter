@@ -12,4 +12,24 @@ class TableService {
       throw e.response?.data['message'] ?? 'Failed to fetch tables';
     }
   }
+
+  Future<bool> createTable(
+    String restaurantID,
+    String tableName,
+    String authCode,
+  ) async {
+    try {
+      final response = await _dio.post(
+        '/user/create/table',
+        data: {
+          'restaurantID': restaurantID,
+          'tableName': tableName,
+          'authCode': authCode,
+        },
+      );
+      return true;
+    } on DioException catch (e) {
+      throw e.response?.data['message'] ?? 'Failed to create table';
+    }
+  }
 }
