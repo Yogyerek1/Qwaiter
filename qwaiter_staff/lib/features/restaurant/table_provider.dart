@@ -111,4 +111,20 @@ class TableProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<void> deleteTable(String restaurantID, String tableID) async {
+    if (!isInitialized) {
+      _setState(TableStatus.error, 'Restaurant ID is not set');
+      return;
+    }
+
+    _setState(TableStatus.loading);
+    try {
+      _service.deleteTable(restaurantID, tableID);
+      await fetchTables();
+      _setState(TableStatus.idle);
+    } catch (e) {
+      _setState(TableStatus.error, e.toString());
+    }
+  }
 }
