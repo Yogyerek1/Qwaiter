@@ -177,4 +177,22 @@ class MenuProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> deleteMenuItem(String menuItemID) async {
+    if (!isInitialized) {
+      _setState(MenuStatus.error, 'Restaurant ID is not set');
+      return false;
+    }
+
+    _setState(MenuStatus.loading);
+    try {
+      await _service.deleteMenuItem(restaurantID, menuItemID);
+      await fetchMenu();
+      _setState(MenuStatus.idle);
+      return true;
+    } catch (e) {
+      _setState(MenuStatus.error, e.toString());
+      return false;
+    }
+  }
 }
