@@ -123,7 +123,6 @@ class MenuProvider extends ChangeNotifier {
   }
 
   Future<bool> updateCategory(
-    String restaurantID,
     String categoryID,
     String? name,
     int? displayOrder,
@@ -140,6 +139,35 @@ class MenuProvider extends ChangeNotifier {
         categoryID,
         name,
         displayOrder,
+      );
+      await fetchMenu();
+      _setState(MenuStatus.idle);
+      return true;
+    } catch (e) {
+      _setState(MenuStatus.error, e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> createMenuItem(
+    String categoryID,
+    String name,
+    String description,
+    int price,
+  ) async {
+    if (!isInitialized) {
+      _setState(MenuStatus.error, 'Restaurant ID is not set');
+      return false;
+    }
+
+    _setState(MenuStatus.loading);
+    try {
+      await _service.createMenuItem(
+        restaurantID,
+        categoryID,
+        name,
+        description,
+        price,
       );
       await fetchMenu();
       _setState(MenuStatus.idle);
