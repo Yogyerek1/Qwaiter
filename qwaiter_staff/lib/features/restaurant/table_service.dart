@@ -53,7 +53,7 @@ class TableService {
     try {
       final Map<String, dynamic> data = {
         'restaurantID': restaurantID,
-        'workerID': tableID,
+        'tableID': tableID,
       };
 
       if (tableName != null) data['tableName'] = tableName;

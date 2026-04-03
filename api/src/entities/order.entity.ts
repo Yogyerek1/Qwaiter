@@ -42,7 +42,10 @@ export class Order {
   @CreateDateColumn()
   createdAt: Date;
 
-  @ManyToOne(() => Table, (table) => table.orders, { nullable: true })
+  @ManyToOne(() => Table, (table) => table.orders, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'tableID' })
   table: Table;
 
