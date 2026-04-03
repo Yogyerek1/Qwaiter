@@ -31,4 +31,15 @@ class MenuService {
       throw e.response?.data['message'] ?? 'Failed to create category';
     }
   }
+
+  Future<void> deleteCategory(String restaurantID, String categoryID) async {
+    try {
+      await _dio.delete(
+        '/user/delete/category',
+        data: {'restaurantID': restaurantID, 'categoryID': categoryID},
+      );
+    } on DioException catch (e) {
+      e.response?.data['message'] ?? 'Failed to delete category';
+    }
+  }
 }
