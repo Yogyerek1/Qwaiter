@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide Table;
 import 'package:provider/provider.dart';
 import 'package:qwaiter_staff/features/restaurant/table_provider.dart';
+import 'package:qwaiter_staff/features/restaurant/worker_provider.dart';
 
 class TablesScreen extends StatefulWidget {
   final String restaurantId;
@@ -66,7 +67,49 @@ class _TablesScreenState extends State<TablesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Tables - hamarosan'));
+    final provider = context.watch<TableProvider>();
+    return Scaffold(
+      body: switch (provider.status) {
+        TableStatus.loading => const Center(child: CircularProgressIndicator()),
+        TableStatus.error => Center(
+          child: Text(provider.errorMessage ?? 'Something went wrong'),
+        ),
+        TableStatus.idle =>
+          provider.tables.isEmpty
+              ? const Center(child: Text('No tables yet'))
+              : ListView.builder(
+                  padding: EdgeInsets.all(16),
+                  itemCount: provider.tables.length,
+                  itemBuilder: (context, index) {
+                    final t = provider.tables[index];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      child: ListTile(
+                        title: Text(t.tableName),
+                        subtitle: Text(t.authCode),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              onPressed: () => _showEditSheet(t),
+                              icon: const Icon(Icons.edit),
+                            ),
+                            IconButton(
+                              onPressed: () => _deleteWorker(t),
+                              icon: const Icon(Icons.delete),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+      },
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showCreateSheet,
+        child: const Icon(Icons.add),
+      ),
+    );
   }
 }
 

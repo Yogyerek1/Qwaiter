@@ -120,7 +120,7 @@ class TableProvider extends ChangeNotifier {
 
     _setState(TableStatus.loading);
     try {
-      _service.deleteTable(restaurantID, tableID);
+      await _service.deleteTable(restaurantID, tableID);
       await fetchTables();
       _setState(TableStatus.idle);
     } catch (e) {
