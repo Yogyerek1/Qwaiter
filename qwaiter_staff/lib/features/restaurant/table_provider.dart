@@ -48,4 +48,20 @@ class TableProvider extends ChangeNotifier {
     errorMessage = error;
     notifyListeners();
   }
+
+  Future<void> fetchTables() async {
+    if (!isInitialized) {
+      _setState(TableStatus.error, 'Restaurant ID is not set');
+      return;
+    }
+
+    _setState(TableStatus.loading);
+    try {
+      final data = await _service.getTables(restaurantID);
+      tables = data.map((e) => Table.fromJson(e)).toList();
+      _setState(TableStatus.idle);
+    } catch (e) {
+      _setState(TableStatus.error, e.toString());
+    }
+  }
 }
