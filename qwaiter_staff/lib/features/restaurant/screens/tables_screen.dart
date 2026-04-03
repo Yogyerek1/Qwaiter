@@ -48,6 +48,22 @@ class _TablesScreenState extends State<TablesScreen> {
     }
   }
 
+  void _showEditSheet(Table table) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => _TableFormSheet(table: table),
+      isScrollControlled: true,
+    );
+  }
+
+  void _showCreateSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => const _TableFormSheet(),
+      isScrollControlled: true,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return const Center(child: Text('Tables - hamarosan'));
