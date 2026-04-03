@@ -20,7 +20,9 @@ class Category {
     id: json['id'],
     name: json['name'],
     displayOrder: json['displayOrder'],
-    items: json['items'] ?? [],
+    items: (json['items'] as List? ?? [])
+        .map((item) => MenuItem.fromJson(item))
+        .toList(),
   );
 }
 
@@ -28,7 +30,7 @@ class MenuItem {
   final String id;
   final String name;
   final String description;
-  final int price;
+  final String price;
 
   const MenuItem({
     required this.id,
@@ -53,7 +55,7 @@ class MenuProvider extends ChangeNotifier {
   MenuStatus status = MenuStatus.idle;
   String? errorMessage;
   List<Category> categories = [];
-  List<MenuItem> menuItems = [];
+  List<MenuItem> get menuItems => categories.expand((c) => c.items).toList();
 
   void setRestaurantID(String id) {
     _restaurantID = id;
@@ -66,5 +68,21 @@ class MenuProvider extends ChangeNotifier {
     status = s;
     errorMessage = error;
     notifyListeners();
+  }
+
+  Future<void> fetchMenu() async {
+    if (!isInitialized) {
+      _setState(MenuStatus.error, 'Restaurant ID is not set');
+      return;
+    }
+
+    _setState(MenuStatus.loading);
+    try {
+      final data = await _service.getMenu(restaurantID);
+      categories = data.map((e) => Category.fromJson(e)).toList();
+      _setState(MenuStatus.idle);
+    } catch (e) {
+      _setState(MenuStatus.error, e.toString());
+    }
   }
 }
