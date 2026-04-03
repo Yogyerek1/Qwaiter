@@ -84,4 +84,27 @@ class MenuService {
       throw e.response?.data['message'] ?? 'Failed to get menu item';
     }
   }
+
+  Future<void> createMenuItem(
+    String restaurantID,
+    String categoryID,
+    String name,
+    String description,
+    int price,
+  ) async {
+    try {
+      await _dio.post(
+        '/user/create/menuItem',
+        data: {
+          'restaurantID': restaurantID,
+          'categoryID': categoryID,
+          'name': name,
+          'description': description,
+          'price': price,
+        },
+      );
+    } on DioException catch (e) {
+      throw e.response?.data['message'] ?? 'Failed to create menu item';
+    }
+  }
 }
