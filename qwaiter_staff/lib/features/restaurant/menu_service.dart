@@ -107,4 +107,15 @@ class MenuService {
       throw e.response?.data['message'] ?? 'Failed to create menu item';
     }
   }
+
+  Future<void> deleteMenuItem(String restaurantID, String menuItemID) async {
+    try {
+      await _dio.delete(
+        '/user/delete/menuItem',
+        data: {'restaurantID': restaurantID, 'menuItemID': menuItemID},
+      );
+    } on DioException catch (e) {
+      throw e.response?.data['message'] ?? 'Failed to delete menu item';
+    }
+  }
 }
