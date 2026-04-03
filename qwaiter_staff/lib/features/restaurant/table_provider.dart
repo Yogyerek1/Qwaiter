@@ -89,4 +89,26 @@ class TableProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> updateTable(
+    String restaurantID,
+    String tableID,
+    String? tableName,
+    String? authCode,
+  ) async {
+    if (!isInitialized) {
+      _setState(TableStatus.error, 'Restaurant ID is not set');
+      return false;
+    }
+
+    _setState(TableStatus.loading);
+    try {
+      await _service.updateTable(restaurantID, tableID, tableName, authCode);
+      await fetchTables();
+      return true;
+    } catch (e) {
+      _setState(TableStatus.error, e.toString());
+      return false;
+    }
+  }
 }
