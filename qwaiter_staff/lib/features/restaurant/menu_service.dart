@@ -72,4 +72,16 @@ class MenuService {
       throw e.response?.data['message'] ?? 'Failed to get menu';
     }
   }
+
+  Future<List<dynamic>> getMenuItem(
+    String restaurantID,
+    String menuItemID,
+  ) async {
+    try {
+      final response = await _dio.get('/user/$restaurantID/menu');
+      return response.data as List<dynamic>;
+    } on DioException catch (e) {
+      throw e.response?.data['message'] ?? 'Failed to get menu item';
+    }
+  }
 }
