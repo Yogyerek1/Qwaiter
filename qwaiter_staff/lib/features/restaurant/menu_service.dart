@@ -12,4 +12,23 @@ class MenuService {
       throw e.response?.data['message'] ?? 'Failed to get categories';
     }
   }
+
+  Future<void> createCategory(
+    String restaurantID,
+    String categoryName,
+    int displayOrder,
+  ) async {
+    try {
+      await _dio.post(
+        '/user/create/category',
+        data: {
+          'restaurantID': restaurantID,
+          'categoryName': categoryName,
+          'displayOrder': displayOrder,
+        },
+      );
+    } on DioException catch (e) {
+      throw e.response?.data['message'] ?? 'Failed to create category';
+    }
+  }
 }
