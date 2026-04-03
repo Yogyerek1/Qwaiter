@@ -85,4 +85,21 @@ class MenuProvider extends ChangeNotifier {
       _setState(MenuStatus.error, e.toString());
     }
   }
+
+  Future<bool> createCategory(String categoryName, int displayOrder) async {
+    if (!isInitialized) {
+      _setState(MenuStatus.error, 'Restaurant ID is not set');
+      return false;
+    }
+
+    _setState(MenuStatus.loading);
+    try {
+      await _service.createCategory(restaurantID, categoryName, displayOrder);
+      _setState(MenuStatus.idle);
+      return true;
+    } catch (e) {
+      _setState(MenuStatus.error, e.toString());
+      return false;
+    }
+  }
 }
