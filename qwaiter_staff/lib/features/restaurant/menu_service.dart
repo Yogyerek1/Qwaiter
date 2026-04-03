@@ -42,4 +42,25 @@ class MenuService {
       e.response?.data['message'] ?? 'Failed to delete category';
     }
   }
+
+  Future<void> updateCategory(
+    String restaurantID,
+    String categoryID,
+    String? name,
+    int? displayOrder,
+  ) async {
+    try {
+      final Map<String, dynamic> data = {
+        'restaurantID': restaurantID,
+        'categoryID': categoryID,
+      };
+
+      if (name != null) data['name'] = name;
+      if (displayOrder != null) data['displayOrder'] = displayOrder;
+
+      await _dio.patch('/user/update/categories', data: data);
+    } on DioException catch (e) {
+      throw e.response?.data['message'] ?? 'Failed to update category';
+    }
+  }
 }
