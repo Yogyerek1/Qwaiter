@@ -19,7 +19,7 @@ class TableService {
     String authCode,
   ) async {
     try {
-      final response = await _dio.post(
+      await _dio.post(
         '/user/create/table',
         data: {
           'restaurantID': restaurantID,
@@ -30,6 +30,17 @@ class TableService {
       return true;
     } on DioException catch (e) {
       throw e.response?.data['message'] ?? 'Failed to create table';
+    }
+  }
+
+  Future<void> deleteTable(String restaurantID, String tableID) async {
+    try {
+      await _dio.delete(
+        '/user/delete/table',
+        data: {'restaurantID': restaurantID, 'tableID': tableID},
+      );
+    } on DioException catch (e) {
+      throw e.response?.data['message'] ?? 'Failed to delete table';
     }
   }
 }
