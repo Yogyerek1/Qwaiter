@@ -129,6 +129,7 @@ class _MenuScreenState extends State<MenuScreen> {
       },
       floatingActionButton: FloatingActionButton(
         onPressed: () => {},
+        child: const Icon(Icons.add),
       ), // TODO: ADD CATEGORY
     );
   }
