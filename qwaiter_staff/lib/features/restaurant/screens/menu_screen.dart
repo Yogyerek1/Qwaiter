@@ -157,6 +157,13 @@ class _CategoryFormSheetState extends State<_CategoryFormSheet> {
   }
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _displayOrderController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // TODO: implement build
     throw UnimplementedError();
