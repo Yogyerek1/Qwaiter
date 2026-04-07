@@ -30,7 +30,7 @@ class MenuItem {
   final String id;
   final String name;
   final String description;
-  final String price;
+  final double price;
 
   const MenuItem({
     required this.id,
@@ -43,8 +43,18 @@ class MenuItem {
     id: json['id'],
     name: json['name'],
     description: json['description'],
-    price: json['price'],
+    price: _parsePrice(json['price']),
   );
+
+  static double _parsePrice(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) {
+      return double.tryParse(value) ?? 0.0;
+    }
+    return 0.0;
+  }
 }
 
 class MenuProvider extends ChangeNotifier {
@@ -153,7 +163,7 @@ class MenuProvider extends ChangeNotifier {
     String categoryID,
     String name,
     String description,
-    int price,
+    double price,
   ) async {
     if (!isInitialized) {
       _setState(MenuStatus.error, 'Restaurant ID is not set');
@@ -201,7 +211,7 @@ class MenuProvider extends ChangeNotifier {
     String categoryID,
     String? name,
     String? description,
-    int? price,
+    double? price,
   ) async {
     if (!isInitialized) {
       _setState(MenuStatus.error, 'Restaurant ID is not set');

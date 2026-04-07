@@ -85,6 +85,22 @@ class _MenuScreenState extends State<MenuScreen> {
     );
   }
 
+  void _showEditSheetForMenuItem(MenuItem item, String categoryID) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => _MenuItemFormSheet(item: item, categoryID: categoryID),
+      isScrollControlled: true,
+    );
+  }
+
+  void _showCreateSheetForMenuItem() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => _MenuItemFormSheet(),
+      isScrollControlled: true,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<MenuProvider>();
@@ -128,7 +144,8 @@ class _MenuScreenState extends State<MenuScreen> {
                               children: [
                                 IconButton(
                                   icon: Icon(Icons.edit),
-                                  onPressed: () => {}, // TODO: EDIT ITEM
+                                  onPressed: () =>
+                                      _showEditSheetForMenuItem(item, c.id),
                                 ),
                                 IconButton(
                                   icon: Icon(Icons.delete),
@@ -278,6 +295,169 @@ class _CategoryFormSheetState extends State<_CategoryFormSheet> {
           TextField(
             controller: _displayOrderController,
             decoration: const InputDecoration(labelText: 'Display order'),
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: isLoading ? null : _submit,
+              child: isLoading
+                  ? CircularProgressIndicator()
+                  : Text(isEdit ? 'Save' : 'Create'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MenuItemFormSheet extends StatefulWidget {
+  final MenuItem? item;
+  final String? categoryID;
+  const _MenuItemFormSheet({this.item, this.categoryID});
+
+  @override
+  State<_MenuItemFormSheet> createState() => _MenuItemFormSheetState();
+}
+
+class _MenuItemFormSheetState extends State<_MenuItemFormSheet> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _descriptionController;
+  late final TextEditingController _priceController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.item?.name);
+    _descriptionController = TextEditingController(
+      text: widget.item?.description,
+    );
+    _priceController = TextEditingController(
+      text: widget.item?.price.toString(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _priceController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final name = _nameController.text.trim();
+    final description = _descriptionController.text.trim();
+    final priceText = _priceController.text.trim();
+    final provider = context.read<MenuProvider>();
+
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Item name is required!')));
+      return;
+    }
+    if (description.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Description is required!')));
+      return;
+    }
+
+    final price = double.tryParse(priceText);
+    if (price == null || price <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid price!')),
+      );
+      return;
+    }
+
+    bool success = false;
+
+    if (widget.item == null) {
+      if (widget.categoryID == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Category ID is missing!')),
+        );
+        return;
+      }
+
+      success = await provider.createMenuItem(
+        widget.categoryID!,
+        name,
+        description,
+        price,
+      );
+    } else {
+      success = await provider.updateMenuItem(
+        widget.item!.id,
+        widget.categoryID ?? '',
+        name,
+        description,
+        price,
+      );
+    }
+
+    if (success && mounted) {
+      Navigator.pop(context);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            widget.item == null
+                ? 'Menu item successfully created!'
+                : 'Menu item successfully updated!',
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else if (!success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(provider.errorMessage ?? 'Something went wrong!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isLoading =
+        context.watch<MenuProvider>().status == MenuStatus.loading;
+    final isEdit = widget.item != null;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 24,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            isEdit ? 'Edit menu item' : 'New menu item',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _nameController,
+            decoration: const InputDecoration(labelText: 'Item name'),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _descriptionController,
+            decoration: const InputDecoration(labelText: 'Description'),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _priceController,
+            decoration: const InputDecoration(labelText: 'Price'),
             keyboardType: TextInputType.number,
           ),
           const SizedBox(height: 24),

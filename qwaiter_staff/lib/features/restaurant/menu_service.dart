@@ -90,7 +90,7 @@ class MenuService {
     String categoryID,
     String name,
     String description,
-    int price,
+    double price,
   ) async {
     try {
       await _dio.post(
@@ -125,7 +125,7 @@ class MenuService {
     String categoryID,
     String? name,
     String? description,
-    int? price,
+    double? price,
   ) async {
     try {
       final Map<String, dynamic> data = {
