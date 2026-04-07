@@ -30,11 +30,15 @@ export class MenuItem {
 
   @ManyToOne(() => Restaurant, (restaurant) => restaurant.menuItems, {
     nullable: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'restaurantID' })
   restaurant: Restaurant;
 
-  @ManyToOne(() => Category, (category) => category.items, { nullable: true })
+  @ManyToOne(() => Category, (category) => category.items, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'categoryID' })
   category: Category;
 }

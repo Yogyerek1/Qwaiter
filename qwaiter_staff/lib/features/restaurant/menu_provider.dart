@@ -104,7 +104,7 @@ class MenuProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> deleteCategory(String restaurantID, String categoryID) async {
+  Future<bool> deleteCategory(String categoryID) async {
     if (!isInitialized) {
       _setState(MenuStatus.error, 'Restaurant ID is not set');
       return false;

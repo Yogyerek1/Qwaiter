@@ -25,6 +25,7 @@ export class Category {
 
   @ManyToOne(() => Restaurant, (restaurant) => restaurant.categories, {
     nullable: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'restaurantID' })
   restaurant: Restaurant;
