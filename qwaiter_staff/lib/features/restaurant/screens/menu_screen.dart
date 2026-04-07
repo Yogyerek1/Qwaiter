@@ -134,3 +134,31 @@ class _MenuScreenState extends State<MenuScreen> {
     );
   }
 }
+
+class _CategoryFormSheet extends StatefulWidget {
+  final Category? category;
+  const _CategoryFormSheet({this.category});
+
+  @override
+  State<_CategoryFormSheet> createState() => _CategoryFormSheetState();
+}
+
+class _CategoryFormSheetState extends State<_CategoryFormSheet> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _displayOrderController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.category?.name);
+    _displayOrderController = TextEditingController(
+      text: widget.category?.displayOrder.toString(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+}
