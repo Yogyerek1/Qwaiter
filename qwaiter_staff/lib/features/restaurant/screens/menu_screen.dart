@@ -250,7 +250,48 @@ class _CategoryFormSheetState extends State<_CategoryFormSheet> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    final isLoading =
+        context.watch<MenuProvider>().status == MenuStatus.loading;
+    final isEdit = widget.category != null;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 24,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            isEdit ? 'Edit category' : 'New category',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _nameController,
+            decoration: const InputDecoration(labelText: 'Category name'),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _displayOrderController,
+            decoration: const InputDecoration(labelText: 'Display order'),
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: isLoading ? null : _submit,
+              child: isLoading
+                  ? CircularProgressIndicator()
+                  : Text(isEdit ? 'Save' : 'Create'),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
