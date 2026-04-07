@@ -45,6 +45,30 @@ class _MenuScreenState extends State<MenuScreen> {
     }
   }
 
+  Future<void> _deleteMenuItem(MenuItem m) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete menu item'),
+        content: const Text('Are you sure?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      await context.read<MenuProvider>().deleteMenuItem(m.id);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<MenuProvider>();
@@ -92,7 +116,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                 ),
                                 IconButton(
                                   icon: Icon(Icons.delete),
-                                  onPressed: () => {}, // TODO: DELETE ITEM
+                                  onPressed: () => _deleteMenuItem(item),
                                 ),
                               ],
                             ),
