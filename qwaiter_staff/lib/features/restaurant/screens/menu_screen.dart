@@ -93,10 +93,10 @@ class _MenuScreenState extends State<MenuScreen> {
     );
   }
 
-  void _showCreateSheetForMenuItem() {
+  void _showCreateSheetForMenuItem(String categoryID) {
     showModalBottomSheet(
       context: context,
-      builder: (_) => _MenuItemFormSheet(),
+      builder: (_) => _MenuItemFormSheet(categoryID: categoryID),
       isScrollControlled: true,
     );
   }
@@ -130,6 +130,10 @@ class _MenuScreenState extends State<MenuScreen> {
                           IconButton(
                             icon: Icon(Icons.delete),
                             onPressed: () => _deleteCategory(c),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.add),
+                            onPressed: () => _showCreateSheetForMenuItem(c.id),
                           ),
                         ],
                       ),
