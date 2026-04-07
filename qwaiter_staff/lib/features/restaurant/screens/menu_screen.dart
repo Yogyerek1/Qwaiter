@@ -69,6 +69,22 @@ class _MenuScreenState extends State<MenuScreen> {
     }
   }
 
+  void _showEditSheetForCategory(Category category) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => _CategoryFormSheet(category: category),
+      isScrollControlled: true,
+    );
+  }
+
+  void _showCreateSheetForCategory() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => _CategoryFormSheet(),
+      isScrollControlled: true,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<MenuProvider>();
@@ -93,7 +109,7 @@ class _MenuScreenState extends State<MenuScreen> {
                         children: [
                           IconButton(
                             icon: Icon(Icons.edit),
-                            onPressed: () => {}, // TODO: EDIT CATEGORY
+                            onPressed: () => _showEditSheetForCategory(c),
                           ),
                           IconButton(
                             icon: Icon(Icons.delete),
@@ -128,9 +144,9 @@ class _MenuScreenState extends State<MenuScreen> {
                 ),
       },
       floatingActionButton: FloatingActionButton(
-        onPressed: () => {},
+        onPressed: () => _showCreateSheetForCategory(),
         child: const Icon(Icons.add),
-      ), // TODO: ADD CATEGORY
+      ),
     );
   }
 }
@@ -161,6 +177,75 @@ class _CategoryFormSheetState extends State<_CategoryFormSheet> {
     _nameController.dispose();
     _displayOrderController.dispose();
     super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final name = _nameController.text.trim();
+    final displayOrder = _displayOrderController.text.trim();
+    final provider = context.read<MenuProvider>();
+
+    if (name.isEmpty || displayOrder.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Category name and display order are required!'),
+        ),
+      );
+      return;
+    }
+
+    bool success = false;
+
+    if (widget.category == null) {
+      if (name.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Category name is required for new category!'),
+          ),
+        );
+        return;
+      }
+    }
+
+    if (widget.category == null) {
+      if (displayOrder.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Display order is required for new category!'),
+          ),
+        );
+        return;
+      }
+
+      success = await provider.createCategory(name, int.parse(displayOrder));
+    } else {
+      success = await provider.updateCategory(
+        widget.category!.id,
+        name,
+        int.parse(displayOrder),
+      );
+    }
+
+    if (success && mounted) {
+      Navigator.pop(context);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            widget.category == null
+                ? 'Category successfully created!'
+                : 'Category successfully updated!',
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else if (!success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(provider.errorMessage ?? 'Something went wrong!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
