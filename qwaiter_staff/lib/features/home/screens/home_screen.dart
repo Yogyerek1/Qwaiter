@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:qwaiter_staff/features/restaurant/restaurant_provider.dart';
+import 'package:qwaiter_staff/features/restaurant/providers/restaurant_provider.dart';
 import '../../auth/auth_provider.dart';
 
 class HomeScreen extends StatelessWidget {

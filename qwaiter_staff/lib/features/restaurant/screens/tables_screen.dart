@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' hide Table;
 import 'package:provider/provider.dart';
-import 'package:qwaiter_staff/features/restaurant/table_provider.dart';
-import 'package:qwaiter_staff/features/restaurant/worker_provider.dart';
+import 'package:qwaiter_staff/features/restaurant/providers/table_provider.dart';
+import 'package:qwaiter_staff/features/restaurant/providers/worker_provider.dart';
 
 class TablesScreen extends StatefulWidget {
   final String restaurantId;

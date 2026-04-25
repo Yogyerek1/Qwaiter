@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:qwaiter_staff/features/restaurant/menu_provider.dart';
+import 'package:qwaiter_staff/features/restaurant/providers/menu_provider.dart';
 
 class MenuScreen extends StatefulWidget {
   final String restaurantId;

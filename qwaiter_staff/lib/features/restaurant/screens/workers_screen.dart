@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:qwaiter_staff/features/restaurant/worker_provider.dart';
+import 'package:qwaiter_staff/features/restaurant/providers/worker_provider.dart';
 import 'package:qwaiter_staff/shared/enums/worker_role.dart';
 
 class WorkersScreen extends StatefulWidget {

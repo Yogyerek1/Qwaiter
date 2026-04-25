@@ -5,10 +5,10 @@ import 'package:qwaiter_staff/core/network/dio_client.dart';
 import 'package:qwaiter_staff/core/router/app_router.dart';
 import 'package:qwaiter_staff/features/auth/auth_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:qwaiter_staff/features/restaurant/menu_provider.dart';
-import 'package:qwaiter_staff/features/restaurant/restaurant_provider.dart';
-import 'package:qwaiter_staff/features/restaurant/table_provider.dart';
-import 'package:qwaiter_staff/features/restaurant/worker_provider.dart';
+import 'package:qwaiter_staff/features/restaurant/providers/menu_provider.dart';
+import 'package:qwaiter_staff/features/restaurant/providers/restaurant_provider.dart';
+import 'package:qwaiter_staff/features/restaurant/providers/table_provider.dart';
+import 'package:qwaiter_staff/features/restaurant/providers/worker_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
