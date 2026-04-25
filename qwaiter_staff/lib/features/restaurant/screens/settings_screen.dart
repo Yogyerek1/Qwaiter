@@ -11,12 +11,32 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  late final TextEditingController _restaurantNameController;
+  late final TextEditingController _restaurantAddressController;
+
+  @override
+  void initState() {
+    super.initState();
+    final restaurant = context
+        .read<RestaurantProvider>()
+        .restaurants
+        .firstWhere((r) => r.id == widget.restaurantId);
+    _restaurantNameController = TextEditingController(text: restaurant.name);
+    _restaurantAddressController = TextEditingController(
+      text: restaurant.address,
+    );
+  }
+
+  @override
+  void dispose() {
+    _restaurantNameController.dispose();
+    _restaurantAddressController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<RestaurantProvider>();
-    final restaurant = provider.restaurants.firstWhere(
-      (r) => r.id == widget.restaurantId,
-    );
 
     return Scaffold(
       body: Padding(
@@ -24,8 +44,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Name: ${restaurant.name}'),
-            Text('Address: ${restaurant.address}'),
+            TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Restaurant name',
+              ),
+            ),
           ],
         ),
       ),
