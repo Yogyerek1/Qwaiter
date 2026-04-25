@@ -17,14 +17,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    final restaurant = context
-        .read<RestaurantProvider>()
-        .restaurants
-        .firstWhere((r) => r.id == widget.restaurantId);
-    _restaurantNameController = TextEditingController(text: restaurant.name);
-    _restaurantAddressController = TextEditingController(
-      text: restaurant.address,
-    );
+    _restaurantNameController = TextEditingController();
+    _restaurantAddressController = TextEditingController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final restaurants = context.read<RestaurantProvider>().restaurants;
+      final restaurant = restaurants.firstWhere(
+        (r) => r.id == widget.restaurantId,
+        orElse: () => throw Exception('Restaurant not found'),
+      );
+      _restaurantNameController.text = restaurant.name;
+      _restaurantAddressController.text = restaurant.address;
+    });
   }
 
   @override
@@ -54,18 +58,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<RestaurantProvider>();
+    final isLoading =
+        context.watch<RestaurantProvider>().status == RestaurantStatus.loading;
 
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(24),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
+              controller: _restaurantNameController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Restaurant name',
+                labelText: 'Name',
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _restaurantAddressController,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Address',
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: isLoading ? null : _submit,
+                child: isLoading
+                    ? const CircularProgressIndicator()
+                    : const Text('Save'),
               ),
             ),
           ],
