@@ -57,7 +57,11 @@ class RestaurantProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> updateRestaurant(String id, String name, String address) async {
+  Future<bool> updateRestaurant(
+    String id,
+    String? name,
+    String? address,
+  ) async {
     _setState(RestaurantStatus.loading);
     try {
       await _service.updateRestaurant(id, name, address);

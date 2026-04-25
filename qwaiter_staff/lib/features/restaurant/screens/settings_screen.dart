@@ -34,6 +34,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.dispose();
   }
 
+  Future<void> _submit() async {
+    final name = _restaurantNameController.text.trim();
+    final address = _restaurantAddressController.text.trim();
+    final provider = context.read<RestaurantProvider>();
+
+    final success = await provider.updateRestaurant(
+      widget.restaurantId,
+      name.isEmpty ? null : name,
+      address.isEmpty ? null : address,
+    );
+
+    if (success && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Restaurant updated!')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<RestaurantProvider>();
