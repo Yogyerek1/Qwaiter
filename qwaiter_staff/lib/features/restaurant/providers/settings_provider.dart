@@ -14,3 +14,12 @@ class Restaurant {
     address: json['address'],
   );
 }
+
+class SettingsProvider extends ChangeNotifier {
+  final SettingsService _service = SettingsService();
+  String? _restaurantID;
+  String get restaurantID => _restaurantID ?? '';
+
+  SettingsStatus status = SettingsStatus.idle;
+  String? errorMessage;
+}

@@ -64,6 +64,15 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('restaurant/:id')
+  getRestaurantByID(
+    @Req() req: AuthRequest,
+    @Param('id') restaurantID: string,
+  ) {
+    return this.userService.getRestaurantByID(req.user.id, restaurantID);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('update/restaurant/:id')
   updateRestaurant(
     @Req() req: AuthRequest,

@@ -96,6 +96,16 @@ export class UserService {
     return restaurants;
   }
 
+  async getRestaurantByID(ownerID: string, restaurantID: string) {
+    const restaurant = await this.restaurantRepository.find({
+      where: { ownerID: ownerID, restaurantID: restaurantID },
+    });
+
+    if (!restaurant) throw new NotFoundException('Restaurant not found!');
+
+    return restaurant;
+  }
+
   async updateRestaurant(
     ownerID: string,
     restaurantID: string,
