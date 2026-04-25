@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qwaiter_staff/features/restaurant/menu_service.dart';
+import 'package:qwaiter_staff/features/restaurant/services/menu_service.dart';
 
 enum MenuStatus { idle, loading, error }
 

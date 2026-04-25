@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qwaiter_staff/features/restaurant/worker_service.dart';
+import 'package:qwaiter_staff/features/restaurant/services/worker_service.dart';
 import 'package:qwaiter_staff/shared/enums/worker_role.dart';
 
 enum WorkerStatus { idle, loading, error }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../restaurant_service.dart';
+import '../services/restaurant_service.dart';
 
 enum RestaurantStatus { idle, loading, error }
 
