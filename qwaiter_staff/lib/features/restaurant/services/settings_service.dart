@@ -20,4 +20,13 @@ class SettingsService {
       throw e.response?.data['message'] ?? 'Failed to update restaurant';
     }
   }
+
+  Future<List<dynamic>> getRestaurant(String restaurantID) async {
+    try {
+      final response = await _dio.get('/user/restaurant/$restaurantID');
+      return response.data as List<dynamic>;
+    } on DioException catch (e) {
+      throw e.response?.data['message'] ?? 'Failed to fetch restaurant';
+    }
+  }
 }
